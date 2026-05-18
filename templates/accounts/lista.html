@@ -11,6 +11,9 @@
   <td>{{ u.nombre_completo }}</td><td>{{ u.email|default:"—" }}</td>
   <td><span class="bdg {% if u.rol == 'admin' %}br{% elif u.rol == 'veterinario' %}bt{% elif u.rol == 'esteticista' %}bg{% else %}ba{% endif %}">{{ u.get_rol_display }}</span></td>
   <td><span class="bdg {% if u.is_active %}bg{% else %}bgr{% endif %}">{% if u.is_active %}Activo{% else %}Inactivo{% endif %}</span></td>
-  <td class="no-print"><a href="{% url 'accounts:editar' u.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i> Editar</a></td>
+  <td class="no-print" style="white-space:nowrap">
+    <a href="{% url 'accounts:editar' u.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="{% url 'accounts:cambiar_password' u.pk %}" class="btn-ol sm" title="Cambiar contraseña"><i class="bi bi-shield-lock"></i></a>
+  </td>
 </tr>{% endfor %}</tbody></table></div>
 {% endblock %}
