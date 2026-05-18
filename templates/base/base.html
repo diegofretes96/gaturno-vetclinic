@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Gaturno{% endblock %} – {{ CLINICA_NOMBRE }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% load static %}<link rel="stylesheet" href="{% static 'css/vetclinic.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+<nav class="vc-sb" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-ic"><i class="bi bi-heart-pulse-fill"></i></div>
+    <div><div class="sb-nm">Ga<em>turno</em></div><span class="sb-sub">{{ CLINICA_NOMBRE }}</span></div>
+  </div>
+  <div class="sb-nav">
+    <div class="nav-sec">Principal</div>
+    <a href="{% url 'reportes:dashboard' %}" class="nav-link {% if request.resolver_match.namespace == 'reportes' %}active{% endif %}"><i class="bi bi-house-fill"></i><span>Inicio</span></a>
+    <a href="{% url 'pacientes:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'pacientes' %}active{% endif %}"><i class="bi bi-file-earmark-medical-fill"></i><span>Historia Clínica</span>{% if total_pacientes %}<span class="nb">{{ total_pacientes }}</span>{% endif %}</a>
+    <a href="{% url 'agenda:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'agenda' %}active{% endif %}"><i class="bi bi-calendar3"></i><span>Agenda</span>{% if citas_hoy_count %}<span class="nb a">{{ citas_hoy_count }}</span>{% endif %}</a>
+    <div class="nav-sec">Clínica</div>
+    <a href="{% url 'consultas:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'consultas' %}active{% endif %}"><i class="bi bi-stethoscope"></i><span>Consultas</span></a>
+    <a href="{% url 'vacunacion:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'vacunacion' %}active{% endif %}"><i class="bi bi-shield-plus"></i><span>Vacunación</span></a>
+    <a href="{% url 'desparasitacion:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'desparasitacion' %}active{% endif %}"><i class="bi bi-bug-fill"></i><span>Desparasitación</span></a>
+    <a href="{% url 'examenes:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'examenes' %}active{% endif %}"><i class="bi bi-eyedropper"></i><span>Exámenes Lab.</span></a>
+    <a href="{% url 'cirugia:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'cirugia' %}active{% endif %}"><i class="bi bi-scissors"></i><span>Cirugía</span></a>
+    <a href="{% url 'hospitalizacion:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'hospitalizacion' %}active{% endif %}"><i class="bi bi-hospital-fill"></i><span>Hospitalización</span>{% if internados_count %}<span class="nb r sala-ct">{{ internados_count }}</span>{% endif %}</a>
+    <div class="nav-sec">Gestión</div>
+    <a href="{% url 'facturacion:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'facturacion' %}active{% endif %}"><i class="bi bi-receipt"></i><span>Facturación</span></a>
+    <a href="{% url 'inventario:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'inventario' %}active{% endif %}"><i class="bi bi-boxes"></i><span>Inventario</span></a>
+    <a href="{% url 'farmacia:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'farmacia' %}active{% endif %}"><i class="bi bi-capsule"></i><span>Farmacia</span></a>
+    <a href="{% url 'estetica:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'estetica' %}active{% endif %}"><i class="bi bi-stars"></i><span>Estética</span></a>
+    <div class="nav-sec">Sistema</div>
+    <a href="{% url 'propietarios:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'propietarios' %}active{% endif %}"><i class="bi bi-people-fill"></i><span>Propietarios</span></a>
+    <a href="{% url 'vademecum:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'vademecum' %}active{% endif %}"><i class="bi bi-journal-medical"></i><span>Vademécum</span></a>
+    <a href="{% url 'certificados:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'certificados' %}active{% endif %}"><i class="bi bi-patch-check-fill"></i><span>Certificados</span></a>
+    <a href="{% url 'reportes:lista' %}" class="nav-link"><i class="bi bi-bar-chart-fill"></i><span>Reportes</span></a>
+    <a href="{% url 'accounts:lista' %}" class="nav-link {% if request.resolver_match.namespace == 'accounts' %}active{% endif %}"><i class="bi bi-person-fill-gear"></i><span>Usuarios</span></a>
+    <a href="/admin/" class="nav-link"><i class="bi bi-gear-fill"></i><span>Configuración</span></a>
+  </div>
+  <div class="sb-user">
+    <div class="u-av">{{ request.user.iniciales }}</div>
+    <div><div class="u-nm">{{ request.user.nombre_completo }}</div><div class="u-role">{{ request.user.get_rol_display }}</div></div>
+    <a href="{% url 'accounts:logout' %}" class="u-out" title="Salir"><i class="bi bi-box-arrow-right"></i></a>
+  </div>
+</nav>
+<div class="vc-main">
+  <header class="vc-top">
+    <button class="menu-tog" id="menuToggle"><i class="bi bi-list"></i></button>
+    <div class="top-tit">{% block page_title %}Gaturno{% endblock %}</div>
+    <div class="top-srch">
+      <i class="bi bi-search"></i>
+      <input type="text" id="globalSearch" placeholder="Buscar mascota o propietario…" autocomplete="off">
+      <div id="srchDrop" class="srch-dd d-none"></div>
+    </div>
+    <div class="top-acts">
+      <div class="top-btn"><i class="bi bi-bell-fill"></i><div class="top-dot"></div></div>
+      <a href="{% url 'agenda:sala_espera' %}" class="top-btn" title="Sala de espera"><i class="bi bi-clock-fill"></i></a>
+      <a href="{% url 'consultas:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva consulta</a>
+    </div>
+  </header>
+  {% if messages %}<div class="vc-msgs">{% for m in messages %}
+  <div class="vc-alert vc-alert-{{ m.tags }}">
+    <i class="bi bi-{% if m.tags == 'success' %}check-circle-fill{% elif 'error' in m.tags or 'danger' in m.tags %}x-circle-fill{% elif m.tags == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %}"></i>
+    {{ m }}<button class="ax" onclick="this.parentElement.remove()">&times;</button>
+  </div>{% endfor %}</div>{% endif %}
+  {% block breadcrumb %}{% endblock %}
+  <div class="vc-cnt">{% block content %}{% endblock %}</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% load static %}<script src="{% static 'js/vetclinic.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

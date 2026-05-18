@@ -1,0 +1,20 @@
+{%  extends 'base/base.html' %}
+{% block title %}Mi perfil{% endblock %}
+{% block page_title %}Mi perfil{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div class="pac-hd">
+      <div class="pac-foto">{{ usuario.iniciales }}</div>
+      <div><div class="pac-nm">{{ usuario.nombre_completo }}</div><div class="pac-esp">{{ usuario.get_rol_display }}</div></div>
+    </div>
+    <div class="ficha-row"><span>Username</span><strong>{{ usuario.username }}</strong></div>
+    <div class="ficha-row"><span>Email</span><strong>{{ usuario.email|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Teléfono</span><strong>{{ usuario.telefono|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Matrícula</span><strong>{{ usuario.matricula|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Especialidad</span><strong>{{ usuario.especialidad|default:"—" }}</strong></div>
+  </div>
+</div>
+</div>
+{% endblock %}

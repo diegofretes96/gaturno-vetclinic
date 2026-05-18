@@ -1,0 +1,22 @@
+<!DOCTYPE html><html lang="es">
+<head><meta charset="UTF-8"><title>{{ obj.numero }}</title>
+<style>body{font-family:Arial,sans-serif;font-size:12px;max-width:700px;margin:0 auto;padding:30px}
+.hdr{display:flex;justify-content:space-between;border-bottom:3px double #1D9E75;padding-bottom:12px;margin-bottom:20px}
+.tit{font-size:22px;font-weight:bold;color:#1D9E75}.cert-tit{text-align:center;font-size:18px;font-weight:bold;margin:20px 0;text-transform:uppercase}
+.contenido{margin:20px 0;line-height:1.8;white-space:pre-line}
+.firma{display:flex;justify-content:center;margin-top:60px}
+.firma-box{text-align:center;border-top:1px solid #333;width:250px;padding-top:8px}
+@media print{.no-print{display:none}}</style></head>
+<body>
+<div class="hdr">
+  <div><div class="tit">VetClinic</div><div style="font-size:11px;color:#666">Sistema de Gestión Veterinaria</div></div>
+  <div style="text-align:right"><div style="font-family:monospace;font-weight:bold;font-size:13px">{{ obj.numero }}</div><div style="font-size:11px;color:#666">{{ obj.fecha_emision|date:"d/m/Y" }}</div></div>
+</div>
+<div class="cert-tit">{{ obj.get_tipo_display }}</div>
+<p><strong>Paciente:</strong> {{ obj.paciente.nombre }} – {{ obj.paciente.especie }}{% if obj.paciente.raza %} / {{ obj.paciente.raza }}{% endif %}</p>
+<p><strong>Propietario:</strong> {{ obj.paciente.propietario.nombre_completo }} ({{ obj.paciente.propietario.tipo_documento }}: {{ obj.paciente.propietario.numero_documento }})</p>
+<div class="contenido">{{ obj.contenido }}</div>
+{% if obj.fecha_vencimiento %}<p style="color:#888;font-size:11px">Válido hasta: {{ obj.fecha_vencimiento|date:"d/m/Y" }}</p>{% endif %}
+<div class="firma"><div class="firma-box">Dr(a). {{ obj.veterinario.nombre_completo }}<br><small>Médico Veterinario{% if obj.veterinario.matricula %} · Mat. {{ obj.veterinario.matricula }}{% endif %}</small></div></div>
+<div class="no-print" style="margin-top:30px"><button onclick="window.print()" style="padding:8px 16px;background:#1D9E75;color:#fff;border:none;border-radius:6px;cursor:pointer">🖨️ Imprimir</button></div>
+</body></html>

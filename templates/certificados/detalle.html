@@ -1,0 +1,29 @@
+{%  extends 'base/base.html' %}
+{% block title %}{{ obj.numero }}{% endblock %}
+{% block page_title %}{{ obj.get_tipo_display }} – {{ obj.numero }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--green),#3B6D11);padding:20px;color:#fff">
+      <div style="font-size:14px;font-weight:800">{{ obj.get_tipo_display }}</div>
+      <div style="font-size:20px;font-family:monospace;margin-top:4px">{{ obj.numero }}</div>
+    </div>
+    <div class="ficha-row"><span>Paciente</span><strong><a href="{% url 'pacientes:detalle' obj.paciente.pk %}" style="color:var(--vc)">{{ obj.paciente.nombre }}</a></strong></div>
+    <div class="ficha-row"><span>Veterinario</span><strong>{{ obj.veterinario.nombre_completo }}</strong></div>
+    <div class="ficha-row"><span>Fecha emisión</span><strong>{{ obj.fecha_emision|date:"d/m/Y" }}</strong></div>
+    <div class="ficha-row"><span>Vencimiento</span><strong>{{ obj.fecha_vencimiento|date:"d/m/Y"|default:"Sin vencimiento" }}</strong></div>
+    <div class="pac-acts no-print">
+      <a href="{% url 'certificados:imprimir' obj.pk %}" class="btn-vc w-full btn-print"><i class="bi bi-printer"></i> Imprimir certificado</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card">
+    <div class="form-sec">Contenido del certificado</div>
+    <div style="white-space:pre-line;font-size:13px;line-height:1.7;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #e8ecf0">{{ obj.contenido }}</div>
+    {% if obj.observaciones %}<div class="form-sec mt-3">Observaciones</div><p style="font-size:13px">{{ obj.observaciones }}</p>{% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{%  extends 'base/base.html' %}
+{% block title %}Inventario{% endblock %}
+{% block page_title %}Inventario de Productos{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <form method="get" class="d-flex gap-2" style="flex:1">
+    <input name="q" value="{{ q }}" class="form-control" placeholder="Buscar producto…" style="max-width:240px">
+    <select name="tipo" class="form-select" style="width:160px">
+      <option value="">Todos los tipos</option>
+      {% for k,v in tipos %}<option value="{{ k }}" {% if k == tipo_sel %}selected{% endif %}>{{ v }}</option>{% endfor %}
+    </select>
+    <button class="btn-vc" type="submit"><i class="bi bi-search"></i></button>
+  </form>
+  <a href="{% url 'inventario:movimiento' %}" class="btn-amb"><i class="bi bi-arrow-left-right"></i> Movimiento</a>
+  <a href="{% url 'inventario:proveedores' %}" class="btn-ol"><i class="bi bi-truck"></i> Proveedores</a>
+  <a href="{% url 'inventario:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo producto</a>
+</div>
+{% if bajo_stock %}
+<div class="alert-box ab-r mb-3"><i class="bi bi-exclamation-triangle-fill"></i><div><strong>{{ bajo_stock|length }} producto{{ bajo_stock|pluralize }} con bajo stock.</strong> Revisar y reponer.</div></div>
+{% endif %}
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Código</th><th>Producto</th><th>Tipo</th><th>Unidad</th><th>Stock</th><th>Mín.</th><th>Precio venta</th><th></th></tr></thead>
+<tbody>
+{% for p in productos %}
+<tr {% if p.bajo_stock %}style="background:#FFF8F0"{% endif %}>
+  <td style="font-family:monospace;font-size:12px">{{ p.codigo }}</td>
+  <td><div style="font-weight:700">{{ p.nombre }}</div>{% if p.nombre_generico %}<div style="font-size:11px;color:#94a3b8">{{ p.nombre_generico }}</div>{% endif %}</td>
+  <td><span class="bdg bgr">{{ p.get_tipo_display }}</span></td>
+  <td>{{ p.unidad_medida }}</td>
+  <td><span style="font-weight:800;color:{% if p.bajo_stock %}var(--red){% else %}var(--vc){% endif %}">{{ p.stock_actual }}</span></td>
+  <td style="color:#94a3b8">{{ p.stock_minimo }}</td>
+  <td style="font-weight:700">{{ MONEDA_SIMBOLO }} {{ p.precio_venta }}</td>
+  <td class="d-flex gap-1 no-print">
+    <a href="{% url 'inventario:detalle' p.pk %}" class="btn-ol sm">Ver</a>
+    <a href="{% url 'inventario:editar' p.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="8" class="text-center text-muted py-4">Sin productos</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if productos.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if productos.has_previous %}<a href="?page={{ productos.previous_page_number }}&q={{ q }}&tipo={{ tipo_sel }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ productos.number }}/{{ productos.paginator.num_pages }}</span>
+  {% if productos.has_next %}<a href="?page={{ productos.next_page_number }}&q={{ q }}&tipo={{ tipo_sel }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

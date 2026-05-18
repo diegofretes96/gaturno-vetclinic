@@ -1,0 +1,37 @@
+{%  extends 'base/base.html' %}
+{% block title %}Examen{% endblock %}
+{% block page_title %}Examen: {{ obj.tipo }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--purple),#5B50CC);padding:20px;color:#fff">
+      <div style="font-size:16px;font-weight:800">{{ obj.tipo }}</div>
+      <div style="opacity:.8;font-size:12px">Examen de laboratorio</div>
+    </div>
+    <div class="ficha-row"><span>Paciente</span><strong><a href="{% url 'pacientes:detalle' obj.paciente.pk %}" style="color:var(--vc)">{{ obj.paciente.nombre }}</a></strong></div>
+    <div class="ficha-row"><span>Veterinario</span><strong>{{ obj.veterinario.nombre_completo }}</strong></div>
+    <div class="ficha-row"><span>Fecha solicitud</span><strong>{{ obj.fecha_solicitud|date:"d/m/Y H:i" }}</strong></div>
+    <div class="ficha-row"><span>Muestra</span><strong>{{ obj.muestra|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Estado</span><strong><span class="bdg {% if obj.estado == 'completado' %}bg{% elif obj.estado == 'cancelado' %}br{% else %}ba{% endif %}">{{ obj.get_estado_display }}</span></strong></div>
+    <div class="pac-acts no-print">
+      <a href="{% url 'examenes:editar' obj.pk %}" class="btn-vc w-full"><i class="bi bi-pencil"></i> Editar / Ingresar resultado</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  {% if obj.resultado %}
+  <div class="form-card">
+    <div class="form-sec">Resultado</div>
+    <div style="white-space:pre-line;font-size:13px">{{ obj.resultado }}</div>
+    {% if obj.interpretacion %}<div class="form-sec mt-3">Interpretación</div><div style="font-size:13px">{{ obj.interpretacion }}</div>{% endif %}
+  </div>{% else %}
+  <div class="panel p-0"><div class="p-empty"><i class="bi bi-hourglass-split" style="color:var(--amb)"></i><p>Resultado pendiente</p><a href="{% url 'examenes:editar' obj.pk %}" class="btn-vc mt-2 no-print">Ingresar resultado</a></div></div>
+  {% endif %}
+  {% if obj.archivo %}
+  <div class="form-card mt-3">
+    <a href="{{ obj.archivo.url }}" class="btn-vc no-print" target="_blank"><i class="bi bi-file-earmark-pdf"></i> Ver archivo adjunto</a>
+  </div>{% endif %}
+</div>
+</div>
+{% endblock %}

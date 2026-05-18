@@ -1,0 +1,20 @@
+{%  extends 'base/base.html' %}
+{% block title %}Vacunación{% endblock %}
+{% block page_title %}Detalle de vacunación{% endblock %}
+{% block content %}
+<div class="form-card">
+  <div class="row g-3">
+    <div class="col-md-6"><div class="dg-lb">Paciente</div><div class="dg-v"><a href="{% url 'pacientes:detalle' obj.paciente.pk %}" style="color:var(--vc)">{{ obj.paciente.nombre }}</a></div></div>
+    <div class="col-md-6"><div class="dg-lb">Vacuna</div><div class="dg-v">{{ obj.vacuna.nombre }}</div></div>
+    <div class="col-md-6"><div class="dg-lb">Fecha aplicación</div><div class="dg-v">{{ obj.fecha_aplicacion|date:"d/m/Y" }}</div></div>
+    <div class="col-md-6"><div class="dg-lb">Próxima dosis</div><div class="dg-v">{{ obj.proxima_dosis|date:"d/m/Y"|default:"—" }}</div></div>
+    <div class="col-md-6"><div class="dg-lb">Veterinario</div><div class="dg-v">{{ obj.veterinario.nombre_completo }}</div></div>
+    <div class="col-md-6"><div class="dg-lb">Lote</div><div class="dg-v">{{ obj.lote|default:"—" }}</div></div>
+    {% if obj.observaciones %}<div class="col-12"><div class="dg-lb">Observaciones</div><div class="dg-v">{{ obj.observaciones }}</div></div>{% endif %}
+  </div>
+  <div class="d-flex gap-2 mt-4 no-print">
+    <a href="{% url 'vacunacion:editar' obj.pk %}" class="btn-vc"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="{% url 'vacunacion:lista' %}" class="btn-ol"><i class="bi bi-arrow-left"></i> Volver</a>
+  </div>
+</div>
+{% endblock %}

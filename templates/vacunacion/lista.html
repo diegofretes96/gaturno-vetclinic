@@ -1,0 +1,38 @@
+{%  extends 'base/base.html' %}
+{% block title %}Vacunación{% endblock %}
+{% block page_title %}Vacunación{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'vacunacion:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Registrar vacunación</a>
+  <a href="{% url 'vacunacion:vacunas' %}" class="btn-ol"><i class="bi bi-list"></i> Gestionar vacunas</a>
+</div>
+{% if proximas %}
+<div class="panel mb-3">
+  <div class="p-hd"><div class="p-tit"><i class="bi bi-exclamation-triangle-fill" style="color:var(--amb)"></i> Próximas en 30 días</div></div>
+  <div class="p-sm">{% for v in proximas %}
+  <div class="vi"><div class="flex-grow-1"><div class="vi-nm">{{ v.paciente.nombre }}</div><div class="vi-tp">{{ v.vacuna.nombre }}</div></div><div class="vi-dt">{{ v.proxima_dosis|date:"d/m/Y" }}</div></div>
+  {% endfor %}</div>
+</div>{% endif %}
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Paciente</th><th>Vacuna</th><th>Fecha</th><th>Veterinario</th><th>Lote</th><th>Próxima dosis</th><th></th></tr></thead>
+<tbody>
+{% for v in vacunaciones %}
+<tr>
+  <td><a href="{% url 'pacientes:detalle' v.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ v.paciente.nombre }}</a></td>
+  <td style="font-weight:700">{{ v.vacuna.nombre }}</td>
+  <td>{{ v.fecha_aplicacion|date:"d/m/Y" }}</td>
+  <td>{{ v.veterinario.nombre_completo }}</td>
+  <td>{{ v.lote|default:"—" }}</td>
+  <td>{% if v.proxima_dosis %}<span class="bdg bt">{{ v.proxima_dosis|date:"d/m/Y" }}</span>{% else %}—{% endif %}</td>
+  <td class="no-print"><a href="{% url 'vacunacion:editar' v.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a></td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-4">Sin vacunaciones</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if vacunaciones.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if vacunaciones.has_previous %}<a href="?page={{ vacunaciones.previous_page_number }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ vacunaciones.number }}/{{ vacunaciones.paginator.num_pages }}</span>
+  {% if vacunaciones.has_next %}<a href="?page={{ vacunaciones.next_page_number }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

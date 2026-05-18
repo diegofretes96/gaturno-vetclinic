@@ -1,0 +1,29 @@
+{%  extends 'base/base.html' %}
+{% block title %}Consultas{% endblock %}
+{% block page_title %}Consultas{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'consultas:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva consulta</a>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Fecha</th><th>Paciente</th><th>Tipo</th><th>Veterinario</th><th>Diagnóstico</th><th></th></tr></thead>
+<tbody>
+{% for c in consultas %}
+<tr>
+  <td>{{ c.fecha|date:"d/m/Y H:i" }}</td>
+  <td><a href="{% url 'pacientes:detalle' c.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ c.paciente.nombre }}</a></td>
+  <td><span class="bdg bt">{{ c.get_tipo_display }}</span></td>
+  <td>{{ c.veterinario.nombre_completo }}</td>
+  <td>{{ c.diagnostico_definitivo|default:c.diagnostico_presuntivo|default:"—"|truncatechars:50 }}</td>
+  <td class="no-print"><a href="{% url 'consultas:detalle' c.pk %}" class="btn-ol sm">Ver</a></td>
+</tr>
+{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">Sin consultas</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if consultas.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if consultas.has_previous %}<a href="?page={{ consultas.previous_page_number }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ consultas.number }}/{{ consultas.paginator.num_pages }}</span>
+  {% if consultas.has_next %}<a href="?page={{ consultas.next_page_number }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+{% load vetclinic_tags %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block breadcrumb %}<nav class="vc-bc"><a href="{% url 'propietarios:lista' %}">Propietarios</a><i class="bi bi-chevron-right"></i><span>{{ titulo }}</span></nav>{% endblock %}
+{% block content %}
+<div class="form-card">
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+
+  {# ── Datos personales ── #}
+  <div class="p-hd mb-3"><div class="p-tit"><i class="bi bi-person-fill"></i> Datos personales</div></div>
+  <div class="row g-3">
+    {% for field in form %}
+    <div class="{% if field.field.widget.attrs.rows or 'Textarea' in field|widget_class %}col-12{% else %}col-md-6{% endif %}">
+      <label class="form-label">{{ field.label }}{% if field.field.required %} <span style="color:var(--red)">*</span>{% endif %}</label>
+      {% render_field field %}
+      {% if field.errors %}<div class="form-err">{{ field.errors|join:", " }}</div>{% endif %}
+      {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {# ── Datos de facturación (opcional) ── #}
+  <hr class="my-4">
+  <div class="p-hd mb-3">
+    <div class="p-tit"><i class="bi bi-receipt"></i> Datos para la Factura <span style="font-size:11px;font-weight:400;opacity:.6">(opcional)</span></div>
+  </div>
+  <div class="row g-3">
+    <div class="col-md-8">
+      <label class="form-label">{{ factura_form.razon_social.label }}</label>
+      {% render_field factura_form.razon_social %}
+      {% if factura_form.razon_social.errors %}<div class="form-err">{{ factura_form.razon_social.errors|join:", " }}</div>{% endif %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">{{ factura_form.ruc.label }}</label>
+      {% render_field factura_form.ruc %}
+      {% if factura_form.ruc.errors %}<div class="form-err">{{ factura_form.ruc.errors|join:", " }}</div>{% endif %}
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mt-4">
+    <button type="submit" class="btn-vc"><i class="bi bi-check-lg"></i> Guardar</button>
+    <a href="javascript:history.back()" class="btn-ol"><i class="bi bi-x"></i> Cancelar</a>
+  </div>
+</form>
+</div>
+{% endblock %}

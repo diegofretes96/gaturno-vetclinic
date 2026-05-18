@@ -1,0 +1,32 @@
+{%  extends 'base/base.html' %}
+{% block title %}Farmacia{% endblock %}
+{% block page_title %}Farmacia – Recetas{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'farmacia:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva receta</a>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Nro.</th><th>Paciente</th><th>Veterinario</th><th>Fecha</th><th>Vencimiento</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for r in items %}
+<tr>
+  <td style="font-weight:700">#{{ r.pk }}</td>
+  <td><a href="{% url 'pacientes:detalle' r.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ r.paciente.nombre }}</a></td>
+  <td>{{ r.veterinario.nombre_completo }}</td>
+  <td>{{ r.fecha_emision|date:"d/m/Y" }}</td>
+  <td>{{ r.fecha_vencimiento|date:"d/m/Y"|default:"—" }}</td>
+  <td><span class="bdg {% if r.estado == 'despachada' %}bg{% elif r.estado == 'cancelada' %}br{% else %}ba{% endif %}">{{ r.get_estado_display }}</span></td>
+  <td class="d-flex gap-1 no-print">
+    <a href="{% url 'farmacia:detalle' r.pk %}" class="btn-ol sm">Ver</a>
+    {% if r.estado == 'emitida' %}<a href="{% url 'farmacia:despachar' r.pk %}" class="btn-vc sm" data-confirm="¿Despachar esta receta?"><i class="bi bi-bag-check"></i> Despachar</a>{% endif %}
+  </td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-4">Sin recetas</td></tr>{% endfor %}
+</tbody></table></div>
+{% if items.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if items.has_previous %}<a href="?page={{ items.previous_page_number }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ items.number }}/{{ items.paginator.num_pages }}</span>
+  {% if items.has_next %}<a href="?page={{ items.next_page_number }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

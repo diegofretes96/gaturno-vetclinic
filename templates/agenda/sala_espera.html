@@ -1,0 +1,38 @@
+{%  extends 'base/base.html' %}
+{% block title %}Sala de espera{% endblock %}
+{% block page_title %}Sala de espera{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'agenda:agregar_sala' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Agregar paciente</a>
+  <a href="{% url 'agenda:lista' %}" class="btn-ol"><i class="bi bi-calendar3"></i> Ver agenda</a>
+</div>
+{% if sala %}
+<div class="info-ban a mb-3"><i class="bi bi-exclamation-circle-fill"></i> {{ sala|length }} paciente{{ sala|pluralize }} esperando</div>
+{% endif %}
+{% for e in sala %}
+<div class="panel p-0 mb-2">
+  <div class="ei">
+    <div class="pet-em" style="font-size:30px">{{ e.cita.paciente.emoji }}</div>
+    <div>
+      <div style="font-size:15px;font-weight:800;color:#1e293b">{{ e.cita.paciente.nombre }}</div>
+      <div style="font-size:12px;color:#64748b">{{ e.cita.paciente.especie }} · {{ e.cita.paciente.propietario.nombre_completo }}</div>
+      <div style="font-size:12px;color:#94a3b8;margin-top:4px"><i class="bi bi-clock"></i> {{ e.tiempo_espera_min }} min en espera · <span class="bdg bt">{{ e.cita.get_tipo_display }}</span></div>
+      {% if e.notas_recepcion %}<div style="font-size:12px;color:var(--amb-dk);margin-top:4px"><i class="bi bi-chat-quote"></i> {{ e.notas_recepcion }}</div>{% endif %}
+    </div>
+    <div class="d-flex flex-column gap-2 align-items-end">
+      <a href="{% url 'agenda:atender' e.pk %}" class="btn-vc"><i class="bi bi-play-fill"></i> Atender ahora</a>
+      <a href="{% url 'consultas:crear' %}?paciente={{ e.cita.paciente.pk }}" class="btn-ol sm"><i class="bi bi-stethoscope"></i> Ir a consulta</a>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="panel p-0">
+  <div class="p-empty" style="padding:60px 16px">
+    <i class="bi bi-check-circle-fill" style="font-size:40px;color:var(--vc)"></i>
+    <h5 class="mt-2">Sin pacientes en espera</h5>
+    <p>No hay pacientes aguardando atención ahora mismo.</p>
+    <a href="{% url 'agenda:agregar_sala' %}" class="btn-vc mt-3"><i class="bi bi-plus-lg"></i> Agregar paciente</a>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

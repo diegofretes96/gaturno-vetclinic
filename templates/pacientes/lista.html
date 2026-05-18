@@ -1,0 +1,42 @@
+{%  extends 'base/base.html' %}
+{% block title %}Historia Clínica{% endblock %}
+{% block page_title %}Historia Clínica{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+  <form method="get" class="d-flex gap-2" style="flex:1">
+    <input name="q" value="{{ q }}" class="form-control" placeholder="Nombre, propietario, microchip…" style="max-width:280px">
+    <select name="especie" class="form-select" style="width:160px">
+      <option value="">Todas las especies</option>
+      {% for e in especies %}<option value="{{ e.pk }}" {% if e.pk|stringformat:"s" == especie_sel %}selected{% endif %}>{{ e }}</option>{% endfor %}
+    </select>
+    <button class="btn-vc" type="submit"><i class="bi bi-search"></i></button>
+    {% if q or especie_sel %}<a href="{% url 'pacientes:lista' %}" class="btn-ol">Limpiar</a>{% endif %}
+  </form>
+  <a href="{% url 'pacientes:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo paciente</a>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Paciente</th><th>Propietario</th><th>Especie / Raza</th><th>Sexo</th><th>Edad</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for p in pacientes %}
+<tr>
+  <td><a href="{% url 'pacientes:detalle' p.pk %}" style="font-weight:700;color:var(--vc)">{{ p.emoji }} {{ p.nombre }}</a></td>
+  <td>{{ p.propietario.nombre_completo }}</td>
+  <td>{{ p.especie }} / {{ p.raza|default:"—" }}</td>
+  <td>{{ p.get_sexo_display }}</td>
+  <td>{{ p.edad }}</td>
+  <td><span class="bdg {% if p.estado == 'activo' %}bt{% elif p.estado == 'fallecido' %}br{% else %}bgr{% endif %}">{{ p.get_estado_display }}</span></td>
+  <td class="d-flex gap-1">
+    <a href="{% url 'pacientes:detalle' p.pk %}" class="btn-vc sm"><i class="bi bi-file-earmark-medical"></i> Historia</a>
+    <a href="{% url 'pacientes:editar' p.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-4">Sin pacientes encontrados</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if pacientes.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3">
+  {% if pacientes.has_previous %}<a href="?page={{ pacientes.previous_page_number }}&q={{ q }}&especie={{ especie_sel }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ pacientes.number }}/{{ pacientes.paginator.num_pages }}</span>
+  {% if pacientes.has_next %}<a href="?page={{ pacientes.next_page_number }}&q={{ q }}&especie={{ especie_sel }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

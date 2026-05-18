@@ -1,0 +1,30 @@
+{%  extends 'base/base.html' %}
+{% block title %}Calendario{% endblock %}
+{% block page_title %}Calendario de Citas{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css">
+<style>#calendar{background:#fff;border-radius:10px;border:1px solid #e8ecf0;padding:16px}.fc-event{cursor:pointer;border-radius:4px!important;border:none!important;padding:2px 5px;font-size:11.5px;font-weight:700}</style>
+{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'agenda:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva cita</a>
+  <a href="{% url 'agenda:lista' %}" class="btn-ol"><i class="bi bi-list"></i> Ver lista</a>
+</div>
+<div id="calendar"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const cal=new FullCalendar.Calendar(document.getElementById('calendar'),{
+    locale:'es',headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,timeGridDay'},
+    initialView:'timeGridWeek',slotMinTime:'07:00:00',slotMaxTime:'21:00:00',
+    events:'{% url "agenda:citas_json" %}',
+    eventClick:function(info){window.location='/agenda/'+info.event.id+'/editar/'},
+    editable:false,nowIndicator:true,businessHours:{daysOfWeek:[1,2,3,4,5,6],startTime:'08:00',endTime:'19:00'},
+    height:'auto'
+  });
+  cal.render();
+});
+</script>
+{% endblock %}

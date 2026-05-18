@@ -1,0 +1,38 @@
+{%  extends 'base/base.html' %}
+{% block title %}Hospitalización{% endblock %}
+{% block page_title %}Hospitalización{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print">
+  <a href="{% url 'hospitalizacion:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo internamiento</a>
+</div>
+{% if internados %}
+<div class="alert-box ab-r mb-3"><i class="bi bi-hospital-fill"></i><div><strong>{{ internados|length }} paciente{{ internados|pluralize }} actualmente internado{{ internados|pluralize }}.</strong></div></div>
+{% endif %}
+<div class="tbl mb-3"><table class="vc-tbl">
+<thead><tr><th>Paciente</th><th>Habitación</th><th>Ingreso</th><th>Días</th><th>Veterinario</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for i in internados %}
+<tr style="background:#FCEBEB">
+  <td><a href="{% url 'pacientes:detalle' i.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ i.paciente.emoji }} {{ i.paciente.nombre }}</a></td>
+  <td>Hab. {{ i.habitacion.numero }} ({{ i.habitacion.get_tipo_display }})</td>
+  <td>{{ i.fecha_ingreso|date:"d/m/Y H:i" }}</td>
+  <td><strong>{{ i.dias_internado }} día{{ i.dias_internado|pluralize }}</strong></td>
+  <td>{{ i.veterinario.nombre_completo }}</td>
+  <td><span class="bdg br">Internado</span></td>
+  <td class="d-flex gap-1 no-print">
+    <a href="{% url 'hospitalizacion:detalle' i.pk %}" class="btn-vc sm">Ver</a>
+    <a href="{% url 'hospitalizacion:alta' i.pk %}" class="btn-dx sm"><i class="bi bi-box-arrow-up-right"></i> Alta</a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-3">Sin pacientes internados</td></tr>{% endfor %}
+</tbody></table></div>
+<div class="p-hd mb-2"><div class="p-tit"><i class="bi bi-clock-history"></i> Historial de internamientos</div></div>
+<div class="tbl"><table class="vc-tbl"><thead><tr><th>Paciente</th><th>Habitación</th><th>Ingreso</th><th>Alta</th><th>Días</th><th>Estado</th><th></th></tr></thead>
+<tbody>{% for i in historial %}
+<tr><td><a href="{% url 'pacientes:detalle' i.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ i.paciente.nombre }}</a></td>
+<td>Hab. {{ i.habitacion.numero }}</td><td>{{ i.fecha_ingreso|date:"d/m/Y" }}</td>
+<td>{{ i.fecha_alta|date:"d/m/Y"|default:"—" }}</td><td>{{ i.dias_internado }}</td>
+<td><span class="bdg {% if i.estado == 'alta_medica' %}bg{% elif i.estado == 'fallecido' %}br{% else %}bgr{% endif %}">{{ i.get_estado_display }}</span></td>
+<td class="no-print"><a href="{% url 'hospitalizacion:detalle' i.pk %}" class="btn-ol sm">Ver</a></td>
+</tr>{% empty %}<tr><td colspan="7" class="text-center text-muted py-3">Sin historial</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

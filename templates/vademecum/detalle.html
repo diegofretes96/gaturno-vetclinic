@@ -1,0 +1,35 @@
+{%  extends 'base/base.html' %}
+{% block title %}{{ obj.nombre_comercial }}{% endblock %}
+{% block page_title %}{{ obj.nombre_comercial }} {{ obj.concentracion }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--blue),#1E5FA5);padding:20px;color:#fff">
+      <div style="font-size:17px;font-weight:800">{{ obj.nombre_comercial }}</div>
+      {% if obj.concentracion %}<div style="opacity:.8;font-size:13px">{{ obj.concentracion }}</div>{% endif %}
+    </div>
+    <div class="ficha-row"><span>Nombre genérico</span><strong>{{ obj.nombre_generico|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Principio activo</span><strong>{{ obj.principio_activo|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Forma farmacéutica</span><strong>{{ obj.forma_farmaceutica|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Laboratorio</span><strong>{{ obj.laboratorio|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Vía administración</span><strong>{{ obj.via_administracion|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Receta</span><strong>{% if obj.requiere_receta %}<span class="bdg br">Requiere receta</span>{% else %}<span class="bdg bg">Venta libre</span>{% endif %}</strong></div>
+    {% if obj.especies.exists %}<div class="ficha-row" style="flex-direction:column;align-items:start;gap:4px"><span>Especies</span><div class="d-flex gap-1 flex-wrap">{% for e in obj.especies.all %}<span class="bdg bt">{{ e }}</span>{% endfor %}</div></div>{% endif %}
+    <div class="pac-acts no-print"><a href="{% url 'vademecum:editar' obj.pk %}" class="btn-vc w-full"><i class="bi bi-pencil"></i> Editar</a></div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card" data-tabs>
+    <div class="ptabs">
+      <button class="ptab active" data-tab="ind"><i class="bi bi-check-circle"></i> Indicaciones</button>
+      <button class="ptab" data-tab="cont"><i class="bi bi-x-circle"></i> Contraindicaciones</button>
+      <button class="ptab" data-tab="dosis"><i class="bi bi-eyedropper"></i> Dosis recomendada</button>
+    </div>
+    <div class="tab-pane active" id="tp-ind"><div class="p-3" style="white-space:pre-line;font-size:13px">{{ obj.indicaciones|default:"Sin información" }}</div></div>
+    <div class="tab-pane" id="tp-cont"><div class="p-3" style="white-space:pre-line;font-size:13px;color:var(--red)">{{ obj.contraindicaciones|default:"Sin contraindicaciones registradas" }}</div></div>
+    <div class="tab-pane" id="tp-dosis"><div class="p-3" style="white-space:pre-line;font-size:13px">{{ obj.dosis_recomendada|default:"Sin información" }}</div></div>
+  </div>
+</div>
+</div>
+{% endblock %}

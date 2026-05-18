@@ -1,0 +1,44 @@
+services:
+
+  # ── Base de datos PostgreSQL ──────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME:-gaturno_db}
+      POSTGRES_USER: ${DB_USER:-gaturno_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-gaturno_pass}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-gaturno_user} -d ${DB_NAME:-gaturno_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Aplicación Django / Gunicorn ──────────────────────────────────────────
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - media:/app/media
+      - static:/app/staticfiles
+    env_file:
+      - .env
+    environment:
+      # Sobreescribir host de BD para que apunte al servicio interno
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+
+# ── Volúmenes persistentes ────────────────────────────────────────────────
+volumes:
+  pgdata:
+    driver: local
+  media:
+    driver: local
+  static:
+    driver: local

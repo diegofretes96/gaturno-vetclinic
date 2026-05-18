@@ -1,0 +1,25 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+{% load vetclinic_tags %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block breadcrumb %}<nav class="vc-bc"><a href="{% url 'desparasitacion:lista' %}">Desparasitación</a><i class="bi bi-chevron-right"></i><span>{{ titulo }}</span></nav>{% endblock %}
+{% block content %}
+<div class="form-card">
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+<div class="row g-3">
+{% for field in form %}
+<div class="{% if 'Textarea' in field|widget_class or 'CheckboxSelectMultiple' in field|widget_class %}col-12{% else %}col-md-6{% endif %}">
+  <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+  {% render_field field %}
+  {% if field.errors %}<div class="form-err">{{ field.errors|join:", " }}</div>{% endif %}
+</div>
+{% endfor %}
+</div>
+<div class="d-flex gap-2 mt-4">
+  <button type="submit" class="btn-vc"><i class="bi bi-check-lg"></i> Guardar</button>
+  <a href="javascript:history.back()" class="btn-ol"><i class="bi bi-x"></i> Cancelar</a>
+</div>
+</form>
+</div>
+{% endblock %}

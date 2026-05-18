@@ -1,0 +1,19 @@
+{%  extends 'base/base.html' %}
+{% block title %}Cobrar factura{% endblock %}
+{% block page_title %}Registrar pago – {{ factura.numero }}{% endblock %}
+{% block content %}
+<div class="form-card" style="max-width:500px;margin:0 auto">
+  <div class="form-sec">Método de pago</div>
+  <p class="mb-3">Total a cobrar: <strong style="font-size:18px;color:var(--vc)">{{ MONEDA_SIMBOLO }} {{ factura.total }}</strong></p>
+  <form method="post">{% csrf_token %}
+    <label class="form-label">Método de pago *</label>
+    <select name="metodo_pago" class="form-select mb-3">
+      {% for k,v in metodos %}<option value="{{ k }}">{{ v }}</option>{% endfor %}
+    </select>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-vc"><i class="bi bi-check-lg"></i> Confirmar pago</button>
+      <a href="{% url 'facturacion:detalle' factura.pk %}" class="btn-ol">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

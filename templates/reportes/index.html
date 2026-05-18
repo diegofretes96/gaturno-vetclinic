@@ -1,0 +1,39 @@
+{%  extends 'base/base.html' %}
+{% load humanize %}
+{% block title %}Reportes{% endblock %}
+{% block page_title %}Reportes del mes{% endblock %}
+{% block content %}
+<div class="stats mb-3">
+  <div class="stat s-g"><div class="si"><i class="bi bi-cash-coin"></i></div><div><div class="st-lb">Ingresos del mes</div><div class="st-v sm">{{ MONEDA_SIMBOLO }} {{ ingresos_mes|intcomma }}</div></div></div>
+  <div class="stat s-t"><div class="si"><i class="bi bi-stethoscope"></i></div><div><div class="st-lb">Consultas del mes</div><div class="st-v">{{ consultas_mes }}</div></div></div>
+  <div class="stat s-b"><div class="si"><i class="bi bi-person-plus-fill"></i></div><div><div class="st-lb">Pacientes nuevos</div><div class="st-v">{{ pacientes_nuevos_mes }}</div></div></div>
+  <div class="stat s-a"><div class="si"><i class="bi bi-receipt"></i></div><div><div class="st-lb">Facturas pendientes</div><div class="st-v sm">{{ MONEDA_SIMBOLO }} {{ facturas_pendientes_total|intcomma }}</div></div></div>
+</div>
+<div class="panel">
+  <div class="p-hd"><div class="p-tit"><i class="bi bi-bar-chart-fill"></i> Top servicios del mes</div></div>
+  <div class="p-3">
+    {% for s in top_servicios %}
+    <div class="d-flex align-items-center gap-3 mb-2">
+      <div style="width:130px;font-size:13px;font-weight:600">{{ s.tipo }}</div>
+      <div style="flex:1;background:#f1f5f9;border-radius:20px;overflow:hidden;height:22px">
+        <div style="width:{{ s.total|floatformat:0 }}%;max-width:100%;background:var(--vc);height:100%;border-radius:20px;display:flex;align-items:center;padding:0 8px;color:#fff;font-size:11px;font-weight:700">{{ s.total }}</div>
+      </div>
+    </div>
+    {% empty %}<div class="text-center text-muted py-4">Sin datos del mes</div>{% endfor %}
+  </div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-md-3"><a href="{% url 'pacientes:lista' %}" class="panel p-0" style="text-decoration:none;display:block">
+    <div class="p-3 d-flex align-items-center gap-3"><div class="si s-t"><i class="bi bi-file-earmark-medical-fill"></i></div><div><div class="st-lb">Historia Clínica</div><div style="font-size:12px;color:#64748b">Ver todos los pacientes</div></div></div>
+  </a></div>
+  <div class="col-md-3"><a href="{% url 'facturacion:lista' %}" class="panel p-0" style="text-decoration:none;display:block">
+    <div class="p-3 d-flex align-items-center gap-3"><div class="si s-g"><i class="bi bi-receipt"></i></div><div><div class="st-lb">Facturación</div><div style="font-size:12px;color:#64748b">Gestionar facturas</div></div></div>
+  </a></div>
+  <div class="col-md-3"><a href="{% url 'inventario:lista' %}" class="panel p-0" style="text-decoration:none;display:block">
+    <div class="p-3 d-flex align-items-center gap-3"><div class="si s-a"><i class="bi bi-boxes"></i></div><div><div class="st-lb">Inventario</div><div style="font-size:12px;color:#64748b">Control de stock</div></div></div>
+  </a></div>
+  <div class="col-md-3"><a href="{% url 'vacunacion:lista' %}" class="panel p-0" style="text-decoration:none;display:block">
+    <div class="p-3 d-flex align-items-center gap-3"><div class="si s-b"><i class="bi bi-shield-plus"></i></div><div><div class="st-lb">Vacunación</div><div style="font-size:12px;color:#64748b">Registro de vacunas</div></div></div>
+  </a></div>
+</div>
+{% endblock %}

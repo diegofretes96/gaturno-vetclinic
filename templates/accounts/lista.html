@@ -1,0 +1,16 @@
+{%  extends 'base/base.html' %}
+{% block title %}Usuarios{% endblock %}
+{% block page_title %}Usuarios del sistema{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print"><a href="{% url 'accounts:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo usuario</a></div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Usuario</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th></th></tr></thead>
+<tbody>{% for u in usuarios %}
+<tr>
+  <td style="font-family:monospace;font-weight:700">{{ u.username }}</td>
+  <td>{{ u.nombre_completo }}</td><td>{{ u.email|default:"—" }}</td>
+  <td><span class="bdg {% if u.rol == 'admin' %}br{% elif u.rol == 'veterinario' %}bt{% elif u.rol == 'esteticista' %}bg{% else %}ba{% endif %}">{{ u.get_rol_display }}</span></td>
+  <td><span class="bdg {% if u.is_active %}bg{% else %}bgr{% endif %}">{% if u.is_active %}Activo{% else %}Inactivo{% endif %}</span></td>
+  <td class="no-print"><a href="{% url 'accounts:editar' u.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i> Editar</a></td>
+</tr>{% endfor %}</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{%  extends 'base/base.html' %}
+{% block title %}Propietarios{% endblock %}
+{% block page_title %}Propietarios{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+  <form method="get" class="d-flex gap-2" style="flex:1">
+    <input name="q" value="{{ q }}" class="form-control" placeholder="Nombre, documento, teléfono…" style="max-width:320px">
+    <button class="btn-vc" type="submit"><i class="bi bi-search"></i></button>
+  </form>
+  <a href="{% url 'propietarios:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo propietario</a>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Apellidos, Nombres</th><th>Documento</th><th>Teléfono</th><th>Email</th><th>Mascotas</th><th></th></tr></thead>
+<tbody>
+{% for p in propietarios %}
+<tr>
+  <td><a href="{% url 'propietarios:detalle' p.pk %}" style="font-weight:700;color:var(--vc)">{{ p.apellidos }}, {{ p.nombres }}</a></td>
+  <td>{{ p.numero_documento }}</td><td>{{ p.telefono }}</td><td>{{ p.email|default:"—" }}</td>
+  <td><span class="bdg bt">{{ p.total_mascotas }}</span></td>
+  <td class="d-flex gap-1">
+    <a href="{% url 'propietarios:editar' p.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a>
+    <a href="{% url 'propietarios:eliminar' p.pk %}" class="btn-dx sm" data-confirm="¿Desactivar a {{ p.nombre_completo }}?"><i class="bi bi-trash"></i></a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">Sin propietarios registrados</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if propietarios.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3">
+  {% if propietarios.has_previous %}<a href="?page={{ propietarios.previous_page_number }}&q={{ q }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ propietarios.number }}/{{ propietarios.paginator.num_pages }}</span>
+  {% if propietarios.has_next %}<a href="?page={{ propietarios.next_page_number }}&q={{ q }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

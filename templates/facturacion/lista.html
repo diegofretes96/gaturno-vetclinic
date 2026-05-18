@@ -1,0 +1,44 @@
+{%  extends 'base/base.html' %}
+{% load humanize %}
+{% block title %}Facturación{% endblock %}
+{% block page_title %}Facturación{% endblock %}
+{% block content %}
+<div class="stats mb-3">
+  <div class="stat s-g"><div class="si"><i class="bi bi-cash-coin"></i></div><div><div class="st-lb">Ingresos hoy</div><div class="st-v sm">{{ MONEDA_SIMBOLO }} {{ stats.hoy|intcomma }}</div></div></div>
+  <div class="stat s-b"><div class="si"><i class="bi bi-calendar-month"></i></div><div><div class="st-lb">Ingresos del mes</div><div class="st-v sm">{{ MONEDA_SIMBOLO }} {{ stats.mes|intcomma }}</div></div></div>
+  <div class="stat s-a"><div class="si"><i class="bi bi-clock-history"></i></div><div><div class="st-lb">Facturas pendientes</div><div class="st-v">{{ stats.pendientes }}</div></div></div>
+  <div class="stat s-t"><div class="si"><i class="bi bi-receipt"></i></div><div><div class="st-lb">Acciones</div><div style="margin-top:4px"><a href="{% url 'facturacion:crear' %}" class="btn-vc sm"><i class="bi bi-plus-lg"></i> Nueva</a></div></div></div>
+</div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <form method="get" class="d-flex gap-2">
+    <select name="estado" class="form-select" style="width:180px" onchange="this.form.submit()">
+      <option value="">Todos los estados</option>
+      {% for k,v in estados %}<option value="{{ k }}" {% if k == estado_sel %}selected{% endif %}>{{ v }}</option>{% endfor %}
+    </select>
+  </form>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Nro.</th><th>Propietario</th><th>Paciente</th><th>Fecha</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for f in facturas %}
+<tr>
+  <td style="font-weight:700;font-family:monospace">{{ f.numero }}</td>
+  <td><a href="{% url 'propietarios:detalle' f.propietario.pk %}" style="color:var(--vc);font-weight:700">{{ f.propietario.nombre_completo }}</a></td>
+  <td>{{ f.paciente.nombre|default:"—" }}</td>
+  <td>{{ f.fecha_emision|date:"d/m/Y H:i" }}</td>
+  <td style="font-weight:800">{{ MONEDA_SIMBOLO }} {{ f.total }}</td>
+  <td><span class="bdg {% if f.estado == 'pagada' %}bg{% elif f.estado == 'anulada' %}br{% elif f.estado == 'emitida' %}ba{% else %}bgr{% endif %}">{{ f.get_estado_display }}</span></td>
+  <td class="d-flex gap-1 no-print">
+    <a href="{% url 'facturacion:detalle' f.pk %}" class="btn-ol sm">Ver</a>
+    {% if f.estado != 'pagada' and f.estado != 'anulada' %}<a href="{% url 'facturacion:cobrar' f.pk %}" class="btn-vc sm"><i class="bi bi-cash"></i> Cobrar</a>{% endif %}
+  </td>
+</tr>
+{% empty %}<tr><td colspan="7" class="text-center text-muted py-4">Sin facturas</td></tr>{% endfor %}
+</tbody></table></div>
+{% if facturas.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if facturas.has_previous %}<a href="?page={{ facturas.previous_page_number }}&estado={{ estado_sel }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ facturas.number }}/{{ facturas.paginator.num_pages }}</span>
+  {% if facturas.has_next %}<a href="?page={{ facturas.next_page_number }}&estado={{ estado_sel }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

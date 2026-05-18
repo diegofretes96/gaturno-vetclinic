@@ -1,0 +1,116 @@
+{%  extends 'base/base.html' %}
+{% block title %}{{ paciente.nombre }}{% endblock %}
+{% block page_title %}{{ paciente.emoji }} {{ paciente.nombre }}{% endblock %}
+{% block breadcrumb %}<nav class="vc-bc"><a href="{% url 'pacientes:lista' %}">Historia Clínica</a><i class="bi bi-chevron-right"></i><span>{{ paciente.nombre }}</span></nav>{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-3">
+  <div class="panel p-0">
+    <div class="pac-hd">
+      <div class="pac-foto">{% if paciente.foto %}<img src="{{ paciente.foto.url }}">{% else %}{{ paciente.emoji }}{% endif %}</div>
+      <div><div class="pac-nm">{{ paciente.nombre }}</div><div class="pac-esp">{{ paciente.especie }}{% if paciente.raza %} · {{ paciente.raza }}{% endif %}</div></div>
+    </div>
+    <div class="ficha-row"><span>Sexo</span><strong>{{ paciente.get_sexo_display }}</strong></div>
+    <div class="ficha-row"><span>Edad</span><strong>{{ paciente.edad }}</strong></div>
+    <div class="ficha-row"><span>Color</span><strong>{{ paciente.color|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Peso</span><strong>{% if paciente.peso %}{{ paciente.peso }} kg{% else %}—{% endif %}</strong></div>
+    <div class="ficha-row"><span>Microchip</span><strong>{{ paciente.microchip|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Esterilizado</span><strong>{% if paciente.esterilizado %}<span class="bdg bg">Sí</span>{% else %}<span class="bdg bgr">No</span>{% endif %}</strong></div>
+    {% if paciente.alergias %}<div class="ficha-row" style="flex-direction:column;align-items:start;gap:4px"><span>Alergias</span><strong style="color:var(--red)">{{ paciente.alergias }}</strong></div>{% endif %}
+    <div class="pac-acts no-print">
+      <a href="{% url 'consultas:crear' %}?paciente={{ paciente.pk }}" class="btn-vc w-full"><i class="bi bi-stethoscope"></i> Nueva consulta</a>
+      <a href="{% url 'agenda:crear' %}?paciente={{ paciente.pk }}" class="btn-ol w-full"><i class="bi bi-calendar-plus"></i> Agendar cita</a>
+      <a href="{% url 'pacientes:editar' paciente.pk %}" class="btn-ol w-full"><i class="bi bi-pencil"></i> Editar ficha</a>
+      <a href="{% url 'vacunacion:crear' %}?paciente={{ paciente.pk }}" class="btn-ol w-full"><i class="bi bi-shield-plus"></i> Registrar vacuna</a>
+      <a href="{% url 'certificados:crear' %}?paciente={{ paciente.pk %}" class="btn-ol w-full"><i class="bi bi-patch-check"></i> Emitir certificado</a>
+    </div>
+    <div class="prop-box">
+      <div class="prop-lbl">Propietario</div>
+      <div class="prop-nm"><a href="{% url 'propietarios:detalle' paciente.propietario.pk %}" style="color:var(--vc)">{{ paciente.propietario.nombre_completo }}</a></div>
+      <div class="prop-tel"><i class="bi bi-telephone-fill"></i> {{ paciente.propietario.telefono }}</div>
+      {% if paciente.propietario.email %}<div class="prop-tel"><i class="bi bi-envelope-fill"></i> {{ paciente.propietario.email }}</div>{% endif %}
+    </div>
+  </div>
+</div>
+<div class="col-md-9">
+  <div class="panel" data-tabs>
+    <div class="ptabs">
+      <button class="ptab active" data-tab="consultas"><i class="bi bi-stethoscope"></i> Consultas <span class="tc">{{ consultas|length }}</span></button>
+      <button class="ptab" data-tab="vacunas"><i class="bi bi-shield-plus"></i> Vacunas <span class="tc">{{ vacunaciones|length }}</span></button>
+      <button class="ptab" data-tab="despar"><i class="bi bi-bug-fill"></i> Desparasitaciones</button>
+      <button class="ptab" data-tab="exams"><i class="bi bi-eyedropper"></i> Exámenes</button>
+      <button class="ptab" data-tab="cxs"><i class="bi bi-scissors"></i> Cirugías</button>
+      <button class="ptab" data-tab="hosp"><i class="bi bi-hospital"></i> Hospit.</button>
+      <button class="ptab" data-tab="citas"><i class="bi bi-calendar3"></i> Citas</button>
+      <button class="ptab" data-tab="estetica"><i class="bi bi-stars"></i> Estética</button>
+      <button class="ptab" data-tab="certs"><i class="bi bi-patch-check"></i> Certificados</button>
+    </div>
+    <div class="tab-pane active" id="tp-consultas">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-stethoscope"></i> Consultas</div><a href="{% url 'consultas:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Nueva</a></div>
+      <table class="vc-tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>Veterinario</th><th>Diagnóstico</th><th></th></tr></thead><tbody>
+      {% for c in consultas %}
+      <tr><td>{{ c.fecha|date:"d/m/Y H:i" }}</td><td>{{ c.get_tipo_display }}</td><td>{{ c.veterinario.nombre_completo }}</td><td>{{ c.diagnostico_definitivo|default:c.diagnostico_presuntivo|default:"—"|truncatechars:40 }}</td><td><a href="{% url 'consultas:detalle' c.pk %}" class="btn-ol sm no-print">Ver</a></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin consultas</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-vacunas">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-shield-plus"></i> Vacunas</div><a href="{% url 'vacunacion:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Registrar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Vacuna</th><th>Fecha</th><th>Lote</th><th>Próxima dosis</th><th></th></tr></thead><tbody>
+      {% for v in vacunaciones %}
+      <tr><td style="font-weight:700">{{ v.vacuna.nombre }}</td><td>{{ v.fecha_aplicacion|date:"d/m/Y" }}</td><td>{{ v.lote|default:"—" }}</td><td>{% if v.proxima_dosis %}<span class="bdg bt">{{ v.proxima_dosis|date:"d/m/Y" }}</span>{% else %}—{% endif %}</td><td><a href="{% url 'vacunacion:editar' v.pk %}" class="btn-ol sm no-print"><i class="bi bi-pencil"></i></a></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin vacunas</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-despar">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-bug-fill"></i> Desparasitaciones</div><a href="{% url 'desparasitacion:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Registrar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Tipo</th><th>Producto</th><th>Dosis</th><th>Fecha</th><th>Próxima</th></tr></thead><tbody>
+      {% for d in desparasitaciones %}<tr><td>{{ d.get_tipo_display }}</td><td>{{ d.producto_nombre }}</td><td>{{ d.dosis }}</td><td>{{ d.fecha_aplicacion|date:"d/m/Y" }}</td><td>{{ d.proxima_aplicacion|date:"d/m/Y"|default:"—" }}</td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin desparasitaciones</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-exams">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-eyedropper"></i> Exámenes</div><a href="{% url 'examenes:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Solicitar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Examen</th><th>Fecha</th><th>Estado</th><th>Resultado</th><th></th></tr></thead><tbody>
+      {% for e in examenes %}<tr><td style="font-weight:700">{{ e.tipo }}</td><td>{{ e.fecha_solicitud|date:"d/m/Y" }}</td>
+      <td><span class="bdg {% if e.estado == 'completado' %}bg{% elif e.estado == 'cancelado' %}br{% else %}ba{% endif %}">{{ e.get_estado_display }}</span></td>
+      <td>{{ e.interpretacion|default:"—"|truncatechars:40 }}</td><td><a href="{% url 'examenes:detalle' e.pk %}" class="btn-ol sm no-print">Ver</a></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin exámenes</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-cxs">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-scissors"></i> Cirugías</div><a href="{% url 'cirugia:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Programar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Procedimiento</th><th>Fecha</th><th>Cirujano</th><th>Estado</th><th></th></tr></thead><tbody>
+      {% for c in cirugias %}<tr><td style="font-weight:700">{{ c.procedimiento }}</td><td>{{ c.fecha_programada|date:"d/m/Y" }}</td><td>{{ c.cirujano.nombre_completo }}</td>
+      <td><span class="bdg {% if c.estado == 'completada' %}bg{% elif c.estado == 'cancelada' %}br{% elif c.estado == 'complicacion' %}ba{% else %}bt{% endif %}">{{ c.get_estado_display }}</span></td>
+      <td><a href="{% url 'cirugia:detalle' c.pk %}" class="btn-ol sm no-print">Ver</a></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin cirugías</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-hosp">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-hospital"></i> Hospitalizaciones</div><a href="{% url 'hospitalizacion:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Ingresar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Habitación</th><th>Ingreso</th><th>Alta</th><th>Días</th><th>Estado</th><th></th></tr></thead><tbody>
+      {% for i in internamientos %}<tr><td>Hab. {{ i.habitacion.numero }}</td><td>{{ i.fecha_ingreso|date:"d/m/Y" }}</td><td>{{ i.fecha_alta|date:"d/m/Y"|default:"—" }}</td><td>{{ i.dias_internado }}</td>
+      <td><span class="bdg {% if i.estado == 'internado' %}br{% else %}bg{% endif %}">{{ i.get_estado_display }}</span></td>
+      <td><a href="{% url 'hospitalizacion:detalle' i.pk %}" class="btn-ol sm no-print">Ver</a></td></tr>
+      {% empty %}<tr><td colspan="6" class="text-center text-muted py-3">Sin hospitalizaciones</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-citas">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-calendar3"></i> Citas próximas</div><a href="{% url 'agenda:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Agendar</a></div>
+      <table class="vc-tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>Veterinario</th><th>Estado</th></tr></thead><tbody>
+      {% for c in citas %}<tr><td>{{ c.fecha|date:"d/m/Y H:i" }}</td><td>{{ c.get_tipo_display }}</td><td>{{ c.veterinario.nombre_completo|default:"Sin asignar" }}</td>
+      <td><span class="bdg {% if c.estado == 'realizada' %}bg{% elif 'cancel' in c.estado %}br{% else %}bt{% endif %}">{{ c.get_estado_display }}</span></td></tr>
+      {% empty %}<tr><td colspan="4" class="text-center text-muted py-3">Sin citas próximas</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-estetica">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-stars"></i> Servicios estéticos</div><a href="{% url 'estetica:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Nuevo</a></div>
+      <table class="vc-tbl"><thead><tr><th>Servicio</th><th>Fecha</th><th>Estilista</th><th>Precio</th><th>Estado</th></tr></thead><tbody>
+      {% for e in estetica %}<tr><td>{{ e.get_servicio_display }}</td><td>{{ e.fecha|date:"d/m/Y H:i" }}</td><td>{{ e.esteticista.nombre_completo }}</td><td>{{ MONEDA_SIMBOLO }} {{ e.precio }}</td>
+      <td><span class="bdg {% if e.completado %}bg{% else %}ba{% endif %}">{% if e.completado %}Completado{% else %}Pendiente{% endif %}</span></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin servicios</td></tr>{% endfor %}
+      </tbody></table></div>
+    <div class="tab-pane" id="tp-certs">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-patch-check"></i> Certificados</div><a href="{% url 'certificados:crear' %}?paciente={{ paciente.pk }}" class="btn-vc no-print"><i class="bi bi-plus-lg"></i> Emitir</a></div>
+      <table class="vc-tbl"><thead><tr><th>Nro.</th><th>Tipo</th><th>Fecha</th><th>Vencimiento</th><th></th></tr></thead><tbody>
+      {% for c in certificados %}<tr><td style="font-weight:700">{{ c.numero }}</td><td>{{ c.get_tipo_display }}</td><td>{{ c.fecha_emision|date:"d/m/Y" }}</td><td>{{ c.fecha_vencimiento|date:"d/m/Y"|default:"—" }}</td>
+      <td><a href="{% url 'certificados:detalle' c.pk %}" class="btn-ol sm no-print">Ver</a></td></tr>
+      {% empty %}<tr><td colspan="5" class="text-center text-muted py-3">Sin certificados</td></tr>{% endfor %}
+      </tbody></table></div>
+  </div>
+</div>
+</div>
+{% endblock %}

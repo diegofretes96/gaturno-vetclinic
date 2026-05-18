@@ -1,0 +1,15 @@
+{% extends 'base/base.html' %}
+{% block title %}Confirmar{% endblock %}{% block page_title %}Confirmar acción{% endblock %}
+{% block content %}
+<div class="form-card text-center" style="max-width:500px;margin:0 auto">
+  <i class="bi bi-exclamation-triangle-fill" style="font-size:40px;color:var(--amb)"></i>
+  <h5 class="mt-3 mb-2">¿Estás seguro?</h5>
+  <p class="mb-4" style="color:#64748b"><strong>{{ titulo }}</strong></p>
+  <form method="post">{% csrf_token %}
+    <div class="d-flex gap-2 justify-content-center">
+      <button type="submit" class="btn-dx"><i class="bi bi-trash"></i> Sí, confirmar</button>
+      <a href="javascript:history.back()" class="btn-ol">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

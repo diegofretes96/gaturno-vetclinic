@@ -1,0 +1,13 @@
+{%  extends 'base/base.html' %}
+{% block title %}Vacunas{% endblock %}
+{% block page_title %}Catálogo de Vacunas{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print"><a href="{% url 'vacunacion:crear_vacuna' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva vacuna</a></div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Vacuna</th><th>Especie</th><th>Fabricante</th><th>Intervalo (días)</th><th>Estado</th></tr></thead>
+<tbody>{% for v in vacunas %}
+<tr><td style="font-weight:700">{{ v.nombre }}</td><td>{{ v.especie }}</td><td>{{ v.fabricante|default:"—" }}</td><td>{{ v.intervalo_dias }}</td>
+<td><span class="bdg {% if v.activo %}bt{% else %}bgr{% endif %}">{% if v.activo %}Activo{% else %}Inactivo{% endif %}</span></td></tr>
+{% empty %}<tr><td colspan="5" class="text-center text-muted py-4">Sin vacunas registradas</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

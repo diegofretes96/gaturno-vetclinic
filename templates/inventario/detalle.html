@@ -1,0 +1,46 @@
+{%  extends 'base/base.html' %}
+{% block title %}{{ obj.nombre }}{% endblock %}
+{% block page_title %}{{ obj.nombre }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,#243044,#1a2332);padding:20px;color:#fff">
+      <div style="font-size:16px;font-weight:800">{{ obj.nombre }}</div>
+      <div style="opacity:.6;font-size:11px;font-family:monospace">{{ obj.codigo }}</div>
+    </div>
+    <div class="ficha-row"><span>Tipo</span><strong>{{ obj.get_tipo_display }}</strong></div>
+    <div class="ficha-row"><span>Categoría</span><strong>{{ obj.categoria|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Proveedor</span><strong>{{ obj.proveedor|default:"—" }}</strong></div>
+    <div class="ficha-row"><span>Unidad</span><strong>{{ obj.unidad_medida }}</strong></div>
+    <div class="ficha-row"><span>Precio costo</span><strong>{{ MONEDA_SIMBOLO }} {{ obj.precio_costo }}</strong></div>
+    <div class="ficha-row"><span>Precio venta</span><strong style="color:var(--vc)">{{ MONEDA_SIMBOLO }} {{ obj.precio_venta }}</strong></div>
+    <div class="ficha-row"><span>Stock actual</span><strong style="font-size:18px;color:{% if obj.bajo_stock %}var(--red){% else %}var(--vc){% endif %}">{{ obj.stock_actual }}</strong></div>
+    <div class="ficha-row"><span>Stock mínimo</span><strong>{{ obj.stock_minimo }}</strong></div>
+    <div class="pac-acts no-print">
+      <a href="{% url 'inventario:movimiento' %}" class="btn-vc w-full"><i class="bi bi-arrow-left-right"></i> Registrar movimiento</a>
+      <a href="{% url 'inventario:editar' obj.pk %}" class="btn-ol w-full"><i class="bi bi-pencil"></i> Editar</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="tbl">
+    <div class="p-hd"><div class="p-tit"><i class="bi bi-arrow-left-right"></i> Movimientos de stock</div></div>
+    <table class="vc-tbl"><thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Stock anterior</th><th>Stock resultante</th><th>Motivo</th><th>Usuario</th></tr></thead>
+    <tbody>
+    {% for m in movimientos %}
+    <tr>
+      <td>{{ m.fecha|date:"d/m/Y H:i" }}</td>
+      <td><span class="bdg {% if m.tipo == 'entrada' %}bg{% elif m.tipo == 'salida' %}br{% else %}ba{% endif %}">{{ m.get_tipo_display }}</span></td>
+      <td style="font-weight:700">{% if m.tipo == 'entrada' %}+{% else %}-{% endif %}{{ m.cantidad }}</td>
+      <td style="color:#94a3b8">{{ m.stock_anterior }}</td>
+      <td style="font-weight:700">{{ m.stock_resultante }}</td>
+      <td>{{ m.motivo|default:"—" }}</td>
+      <td>{{ m.usuario.nombre_completo|default:"—" }}</td>
+    </tr>
+    {% empty %}<tr><td colspan="7" class="text-center text-muted py-3">Sin movimientos</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+</div>
+{% endblock %}

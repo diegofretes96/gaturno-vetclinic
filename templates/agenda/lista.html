@@ -1,0 +1,40 @@
+{%  extends 'base/base.html' %}
+{% block title %}Agenda{% endblock %}
+{% block page_title %}Agenda / Citas{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <form method="get" class="d-flex gap-2" style="flex:1">
+    <select name="estado" class="form-select" style="width:180px" onchange="this.form.submit()">
+      <option value="">Todos los estados</option>
+      {% for k,v in estados %}<option value="{{ k }}" {% if k == estado_sel %}selected{% endif %}>{{ v }}</option>{% endfor %}
+    </select>
+  </form>
+  <a href="{% url 'agenda:calendario' %}" class="btn-ol"><i class="bi bi-calendar3"></i> Calendario</a>
+  <a href="{% url 'agenda:sala_espera' %}" class="btn-amb"><i class="bi bi-clock-fill"></i> Sala de espera</a>
+  <a href="{% url 'agenda:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nueva cita</a>
+</div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Fecha / Hora</th><th>Paciente</th><th>Tipo</th><th>Veterinario</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for c in citas %}
+<tr>
+  <td style="font-weight:700">{{ c.fecha|date:"d/m/Y H:i" }}</td>
+  <td><a href="{% url 'pacientes:detalle' c.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ c.paciente.nombre }}</a></td>
+  <td>{{ c.get_tipo_display }}</td>
+  <td>{{ c.veterinario.nombre_completo|default:"Sin asignar" }}</td>
+  <td><span class="bdg {% if c.estado == 'realizada' %}bg{% elif 'cancel' in c.estado or c.estado == 'no_asistio' %}br{% elif c.estado == 'en_consulta' %}bt{% else %}ba{% endif %}">{{ c.get_estado_display }}</span></td>
+  <td class="d-flex gap-1 no-print">
+    <a href="{% url 'agenda:editar' c.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a>
+    <a href="{% url 'agenda:cancelar' c.pk %}" class="btn-dx sm" data-confirm="¿Cancelar esta cita?"><i class="bi bi-x-circle"></i></a>
+  </td>
+</tr>
+{% empty %}<tr><td colspan="6" class="text-center text-muted py-4">Sin citas</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if citas.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if citas.has_previous %}<a href="?page={{ citas.previous_page_number }}&estado={{ estado_sel }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág. {{ citas.number }}/{{ citas.paginator.num_pages }}</span>
+  {% if citas.has_next %}<a href="?page={{ citas.next_page_number }}&estado={{ estado_sel }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}

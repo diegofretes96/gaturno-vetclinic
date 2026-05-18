@@ -1,0 +1,30 @@
+{%  extends 'base/base.html' %}
+{% block title %}Cirugía{% endblock %}
+{% block page_title %}{{ obj.procedimiento }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--coral),#B03E18);padding:20px;color:#fff">
+      <div style="font-size:17px;font-weight:800">{{ obj.procedimiento }}</div>
+      <span class="bdg bgr mt-2" style="display:inline-block">{{ obj.get_estado_display }}</span>
+    </div>
+    <div class="ficha-row"><span>Paciente</span><strong><a href="{% url 'pacientes:detalle' obj.paciente.pk %}" style="color:var(--vc)">{{ obj.paciente.nombre }}</a></strong></div>
+    <div class="ficha-row"><span>Cirujano</span><strong>{{ obj.cirujano.nombre_completo }}</strong></div>
+    {% if obj.anestesista %}<div class="ficha-row"><span>Anestesista</span><strong>{{ obj.anestesista.nombre_completo }}</strong></div>{% endif %}
+    <div class="ficha-row"><span>Fecha</span><strong>{{ obj.fecha_programada|date:"d/m/Y H:i" }}</strong></div>
+    <div class="ficha-row"><span>Anestesia</span><strong>{{ obj.get_tipo_anestesia_display }}</strong></div>
+    <div class="pac-acts no-print"><a href="{% url 'cirugia:editar' obj.pk %}" class="btn-vc w-full"><i class="bi bi-pencil"></i> Editar</a></div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card">
+    <div class="form-sec">Descripción</div><p style="font-size:13px">{{ obj.descripcion }}</p>
+    {% if obj.protocolo_anestesico %}<div class="form-sec mt-3">Protocolo anestésico</div><p style="font-size:13px">{{ obj.protocolo_anestesico }}</p>{% endif %}
+    {% if obj.hallazgos %}<div class="form-sec mt-3">Hallazgos</div><p style="font-size:13px">{{ obj.hallazgos }}</p>{% endif %}
+    {% if obj.complicaciones %}<div class="alert-box ab-r mt-3"><i class="bi bi-exclamation-triangle-fill"></i><div><strong>Complicaciones:</strong> {{ obj.complicaciones }}</div></div>{% endif %}
+    {% if obj.cuidados_post %}<div class="form-sec mt-3">Cuidados postoperatorios</div><p style="font-size:13px">{{ obj.cuidados_post }}</p>{% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

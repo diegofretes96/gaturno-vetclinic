@@ -1,0 +1,105 @@
+{% extends 'base/base.html' %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}¿Qué deseas registrar?{% endblock %}
+{% block content %}
+<div class="qa-grid" id="qa-grid"></div>
+<div class="stats">
+  <div class="stat s-t"><div class="si"><i class="bi bi-heart-pulse-fill"></i></div><div><div class="st-lb">Pacientes hoy</div><div class="st-v">{{ pacientes_hoy }}</div><div class="st-tr up"><i class="bi bi-arrow-up"></i> Atendidos hoy</div></div></div>
+  <div class="stat s-a"><div class="si"><i class="bi bi-clock-fill"></i></div><div><div class="st-lb">Sala de espera</div><div class="st-v">{{ sala_espera|length }}</div><div class="st-tr"><i class="bi bi-person-lines-fill"></i> Esperando ahora</div></div></div>
+  <div class="stat {% if internados_count %}s-r{% else %}s-b{% endif %}"><div class="si"><i class="bi bi-hospital-fill"></i></div><div><div class="st-lb">Hospitalizados</div><div class="st-v">{{ internados_count }}</div><div class="st-tr"><i class="bi bi-activity"></i> Activos</div></div></div>
+  <div class="stat s-g"><div class="si"><i class="bi bi-cash-coin"></i></div><div><div class="st-lb">Ingresos hoy</div><div class="st-v sm">{{ MONEDA_SIMBOLO }} {{ ingresos_hoy|intcomma }}</div><div class="st-tr up"><i class="bi bi-arrow-up"></i> Semana: {{ MONEDA_SIMBOLO }} {{ ingresos_semana|intcomma }}</div></div></div>
+</div>
+<div class="panels" data-tabs>
+  <div class="panel">
+    <div class="p-hd"><div class="p-tit"><i class="bi bi-clock-fill"></i> Resumen de eventos</div><a href="{% url 'agenda:calendario' %}" class="p-lnk">Ver agenda completa</a></div>
+    <div class="ptabs">
+      <button class="ptab active" data-tab="espera"><i class="bi bi-person-lines-fill"></i> Sala de espera <span class="tc">{{ sala_espera|length }}</span></button>
+      <button class="ptab" data-tab="citas"><i class="bi bi-calendar3"></i> Citas hoy <span class="tc">{{ citas_hoy|length }}</span></button>
+      <button class="ptab" data-tab="hosp"><i class="bi bi-hospital"></i> Internados <span class="tc">{{ internados_count }}</span></button>
+      <button class="ptab" data-tab="cumple"><i class="bi bi-balloon-heart"></i> Cumpleaños</button>
+    </div>
+    <div class="tab-pane active" id="tp-espera">
+      {% if sala_espera %}<div class="info-ban a"><i class="bi bi-exclamation-circle-fill"></i> {{ sala_espera|length }} paciente{{ sala_espera|pluralize }} esperando atención</div>{% endif %}
+      {% for e in sala_espera %}
+      <div class="ei">
+        <div class="pet-em">{{ e.cita.paciente.emoji }}</div>
+        <div><div class="ei-nm">{{ e.cita.paciente.nombre }}</div><div class="ei-dt">{{ e.cita.paciente.especie }} · {{ e.cita.paciente.edad }} · {{ e.cita.paciente.propietario.nombre_completo }}</div><div class="ei-tm"><i class="bi bi-clock"></i> {{ e.tiempo_espera_min }} min en espera</div></div>
+        <div class="d-flex flex-column align-items-end gap-1"><span class="bdg bt">{{ e.cita.get_tipo_display }}</span><a href="{% url 'agenda:atender' e.pk %}" class="btn-at"><i class="bi bi-play-fill"></i> Atender</a></div>
+      </div>
+      {% empty %}<div class="p-empty"><i class="bi bi-check-circle-fill" style="color:var(--vc)"></i><p>Sin pacientes en espera</p></div>{% endfor %}
+      <div class="p-ft no-print"><a href="{% url 'agenda:agregar_sala' %}" class="btn-ol sm"><i class="bi bi-plus"></i> Agregar a sala</a></div>
+    </div>
+    <div class="tab-pane" id="tp-citas">
+      {% for c in citas_hoy %}
+      <div class="ci">
+        <div class="ci-hr">{{ c.fecha|time:"H:i" }}</div>
+        <div class="ci-dot d-{{ c.tipo }}"></div>
+        <div class="flex-grow-1"><div class="ci-nm">{{ c.paciente.nombre }} <span>({{ c.paciente.especie }})</span></div><div class="ci-vt">{{ c.veterinario.nombre_completo|default:"Sin asignar" }} · {{ c.get_tipo_display }}</div></div>
+        <span class="bdg {% if c.estado == 'realizada' %}bg{% elif 'cancel' in c.estado %}br{% elif c.estado == 'en_consulta' %}bt{% else %}ba{% endif %}">{{ c.get_estado_display }}</span>
+      </div>
+      {% empty %}<div class="p-empty"><i class="bi bi-calendar-x"></i><p>Sin citas para hoy</p></div>{% endfor %}
+    </div>
+    <div class="tab-pane" id="tp-hosp">
+      {% for i in internados %}
+      <div class="ii">
+        <div class="pet-em">{{ i.paciente.emoji }}</div>
+        <div class="flex-grow-1"><div class="ii-nm">{{ i.paciente.nombre }}</div><div class="ii-dt">Hab. {{ i.habitacion.numero }} · {{ i.dias_internado }} día{{ i.dias_internado|pluralize }} · Dr. {{ i.veterinario.last_name }}</div></div>
+        <a href="{% url 'hospitalizacion:detalle' i.pk %}" class="btn-ol sm no-print">Ver</a>
+      </div>
+      {% empty %}<div class="p-empty"><i class="bi bi-hospital"></i><p>Sin internados activos</p></div>{% endfor %}
+    </div>
+    <div class="tab-pane" id="tp-cumple">
+      {% for item in proximos_cumples %}
+      <div class="cu">
+        <div class="pet-em">🎂</div>
+        <div class="flex-grow-1"><div class="cu-nm">{{ item.paciente.nombre }}</div><div class="cu-dt">{{ item.paciente.propietario.nombre_completo }} · {{ item.fecha|date:"d/m" }}</div></div>
+        <span class="cu-ds">{% if item.dias == 0 %}¡Hoy!{% elif item.dias == 1 %}Mañana{% else %}En {{ item.dias }} días{% endif %}</span>
+      </div>
+      {% empty %}<div class="p-empty"><i class="bi bi-balloon-heart"></i><p>Sin cumpleaños próximos</p></div>{% endfor %}
+    </div>
+  </div>
+  <div class="side-panels">
+    <div class="panel">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-shield-exclamation"></i> Vacunas próximas (15 días)</div><a href="{% url 'vacunacion:lista' %}" class="p-lnk">Ver todas</a></div>
+      <div class="p-sm">
+        {% for v in vacunas_proximas %}
+        <div class="vi"><div class="flex-grow-1"><div class="vi-nm">{{ v.paciente.nombre }}</div><div class="vi-tp">{{ v.vacuna.nombre }}</div></div><div class="vi-dt">{{ v.proxima_dosis|date:"d/m" }}</div></div>
+        {% empty %}<div class="p-empty" style="padding:16px"><i class="bi bi-check-circle" style="color:var(--vc)"></i><p>Sin vacunas pendientes</p></div>{% endfor %}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="p-hd"><div class="p-tit"><i class="bi bi-bar-chart-fill"></i> Resumen del mes</div></div>
+      <div class="p-sm">
+        <div class="ms"><div class="ms-lb"><i class="bi bi-people-fill"></i> Propietarios</div><span class="ms-v">{{ total_propietarios }}</span></div>
+        <div class="ms"><div class="ms-lb"><i class="bi bi-heart-pulse"></i> Pacientes activos</div><span class="ms-v">{{ total_pacientes }}</span></div>
+        <div class="ms"><div class="ms-lb"><i class="bi bi-clipboard2-pulse"></i> Consultas del mes</div><span class="ms-v">{{ consultas_mes }}</span></div>
+        <div class="ms"><div class="ms-lb"><i class="bi bi-calendar-check"></i> Citas de hoy</div><span class="ms-v">{{ citas_hoy|length }}</span></div>
+        <div class="ms"><div class="ms-lb"><i class="bi bi-cash"></i> Ingresos semana</div><span class="ms-v" style="font-size:11px">{{ MONEDA_SIMBOLO }} {{ ingresos_semana|intcomma }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}<script>
+const QA=[
+  {url:"{% url 'consultas:crear' %}",ic:"stethoscope",lb:"Consulta Médica",c:"t"},
+  {url:"{% url 'examenes:crear' %}",ic:"eyedropper",lb:"Exámenes Lab.",c:"a"},
+  {url:"{% url 'cirugia:crear' %}",ic:"scissors",lb:"Cirugía",c:"c"},
+  {url:"{% url 'hospitalizacion:crear' %}",ic:"hospital-fill",lb:"Hospitalización",c:"b"},
+  {url:"{% url 'vacunacion:crear' %}",ic:"shield-plus",lb:"Vacunación",c:"t"},
+  {url:"{% url 'desparasitacion:crear' %}",ic:"bug-fill",lb:"Desparasitación",c:"pu"},
+  {url:"{% url 'estetica:crear' %}",ic:"stars",lb:"Baño y Corte",c:"g"},
+  {url:"{% url 'farmacia:crear' %}",ic:"capsule",lb:"Receta / Farmacia",c:"a"},
+  {url:"{% url 'facturacion:crear' %}",ic:"receipt",lb:"Facturación",c:"c"},
+  {url:"{% url 'certificados:crear' %}",ic:"patch-check-fill",lb:"Certificado",c:"g"},
+  {url:"{% url 'agenda:crear' %}",ic:"calendar-plus",lb:"Nueva Cita",c:"b"},
+  {url:"{% url 'pacientes:crear' %}",ic:"plus-circle-fill",lb:"Nuevo Paciente",c:"t"},
+  {url:"{% url 'propietarios:crear' %}",ic:"person-plus-fill",lb:"Nuevo Propietario",c:"pu"},
+  {url:"{% url 'inventario:movimiento' %}",ic:"boxes",lb:"Mov. Inventario",c:"a"},
+  {url:"{% url 'agenda:sala_espera' %}",ic:"clock-fill",lb:"Sala de Espera",c:"r"},
+  {url:"{% url 'reportes:lista' %}",ic:"bar-chart-fill",lb:"Reportes",c:"g"},
+];
+const g=document.getElementById('qa-grid');
+if(g){g.innerHTML='';QA.forEach(q=>{const a=document.createElement('a');a.href=q.url;a.className='qa-card';a.innerHTML='<div class="qa-ic ic-'+q.c+'"><i class="bi bi-'+q.ic+'"></i></div><div class="qa-lb">'+q.lb+'</div>';g.appendChild(a)})}
+</script>{% endblock %}

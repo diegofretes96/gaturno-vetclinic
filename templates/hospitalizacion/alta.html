@@ -1,0 +1,21 @@
+{%  extends 'base/base.html' %}
+{% block title %}Dar alta{% endblock %}
+{% block page_title %}Dar alta – {{ obj.paciente.nombre }}{% endblock %}
+{% block content %}
+<div class="form-card" style="max-width:500px;margin:0 auto">
+  <div class="form-sec">Registrar alta hospitalaria</div>
+  <p class="mb-3" style="color:#64748b">Paciente: <strong>{{ obj.paciente.nombre }}</strong> · Hab. {{ obj.habitacion.numero }}</p>
+  <form method="post">{% csrf_token %}
+    <label class="form-label">Tipo de alta *</label>
+    <select name="estado" class="form-select mb-3">
+      <option value="alta_medica">Alta médica</option>
+      <option value="alta_voluntaria">Alta voluntaria</option>
+      <option value="fallecido">Fallecido</option>
+    </select>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn-vc"><i class="bi bi-check-lg"></i> Confirmar alta</button>
+      <a href="javascript:history.back()" class="btn-ol">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{%  extends 'base/base.html' %}
+{% load humanize widget_tweaks %}
+{% block title %}Factura {{ factura.numero }}{% endblock %}
+{% block page_title %}Factura {{ factura.numero }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--coral),#8A2810);padding:20px;color:#fff">
+      <div style="font-size:17px;font-weight:800">{{ factura.numero }}</div>
+      <div style="opacity:.8;font-size:12px">{{ factura.get_estado_display }}</div>
+    </div>
+    <div class="ficha-row"><span>Propietario</span><strong>{{ factura.propietario.nombre_completo }}</strong></div>
+    {% if factura.paciente %}<div class="ficha-row"><span>Paciente</span><strong>{{ factura.paciente.nombre }}</strong></div>{% endif %}
+    <div class="ficha-row"><span>Fecha</span><strong>{{ factura.fecha_emision|date:"d/m/Y H:i" }}</strong></div>
+    <div class="ficha-row"><span>Subtotal</span><strong>{{ MONEDA_SIMBOLO }} {{ factura.subtotal }}</strong></div>
+    <div class="ficha-row"><span>Descuento</span><strong>{{ MONEDA_SIMBOLO }} {{ factura.descuento }}</strong></div>
+    <div class="ficha-row"><span>IVA (10%)</span><strong>{{ MONEDA_SIMBOLO }} {{ factura.iva }}</strong></div>
+    <div class="ficha-row" style="background:var(--vc-lt)"><span style="font-weight:800">TOTAL</span><strong style="font-size:18px;color:var(--vc-dk)">{{ MONEDA_SIMBOLO }} {{ factura.total|intcomma }}</strong></div>
+    {% if factura.saldo_pendiente > 0 %}<div class="ficha-row"><span>Saldo pendiente</span><strong style="color:var(--red)">{{ MONEDA_SIMBOLO }} {{ factura.saldo_pendiente|intcomma }}</strong></div>{% endif %}
+    <div class="pac-acts no-print">
+      {% if factura.estado != 'pagada' %}<a href="{% url 'facturacion:cobrar' factura.pk %}" class="btn-vc w-full"><i class="bi bi-cash"></i> Registrar pago</a>{% endif %}
+      <a href="{% url 'facturacion:imprimir' factura.pk %}" class="btn-ol w-full btn-print"><i class="bi bi-printer"></i> Imprimir</a>
+      <a href="{% url 'facturacion:editar' factura.pk %}" class="btn-ol w-full"><i class="bi bi-pencil"></i> Editar</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="form-sec mb-0">Ítems de la factura</div>
+      {% if factura.estado == 'borrador' %}
+      <button class="btn-ol sm no-print" onclick="document.getElementById('item-form').classList.toggle('d-none')"><i class="bi bi-plus"></i> Agregar ítem</button>
+      {% endif %}
+    </div>
+    <div id="item-form" class="d-none mb-3 no-print">
+      <form method="post" action="{% url 'facturacion:agregar_item' factura.pk %}">{% csrf_token %}
+      <div class="row g-2">
+        {% for field in form_item %}<div class="col-md-6"><label class="form-label" style="font-size:11px">{{ field.label }}</label>{% render_field field %}</div>{% endfor %}
+      </div>
+      <button type="submit" class="btn-vc sm mt-2"><i class="bi bi-check"></i> Agregar</button>
+      </form>
+    </div>
+    <table class="vc-tbl">
+      <thead><tr><th>Descripción</th><th>Cant.</th><th>Precio unit.</th><th>Descuento</th><th>Subtotal</th><th></th></tr></thead>
+      <tbody>
+      {% for item in factura.items.all %}
+      <tr>
+        <td>{{ item.descripcion }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>{{ MONEDA_SIMBOLO }} {{ item.precio_unitario }}</td>
+        <td>{{ MONEDA_SIMBOLO }} {{ item.descuento_item }}</td>
+        <td style="font-weight:700">{{ MONEDA_SIMBOLO }} {{ item.subtotal }}</td>
+        <td class="no-print">
+          {% if factura.estado == 'borrador' %}
+          <a href="{% url 'facturacion:eliminar_item' factura.pk item.pk %}" class="btn-dx sm" data-confirm="¿Eliminar este ítem?"><i class="bi bi-trash"></i></a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="text-center text-muted py-3">Sin ítems</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{%  extends 'base/base.html' %}
+{% block title %}Internamiento {{ obj.pk }}{% endblock %}
+{% block page_title %}Internamiento – {{ obj.paciente.nombre }}{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div style="background:linear-gradient(135deg,var(--blue),#1E5FA5);padding:20px;color:#fff">
+      <div style="font-size:18px;font-weight:800">{{ obj.paciente.emoji }} {{ obj.paciente.nombre }}</div>
+      <div style="opacity:.8;font-size:12px">Hab. {{ obj.habitacion.numero }} · {{ obj.dias_internado }} día{{ obj.dias_internado|pluralize }}</div>
+    </div>
+    <div class="ficha-row"><span>Estado</span><strong><span class="bdg {% if obj.estado == 'internado' %}br{% else %}bg{% endif %}">{{ obj.get_estado_display }}</span></strong></div>
+    <div class="ficha-row"><span>Veterinario</span><strong>{{ obj.veterinario.nombre_completo }}</strong></div>
+    <div class="ficha-row"><span>Ingreso</span><strong>{{ obj.fecha_ingreso|date:"d/m/Y H:i" }}</strong></div>
+    {% if obj.fecha_alta %}<div class="ficha-row"><span>Alta</span><strong>{{ obj.fecha_alta|date:"d/m/Y H:i" }}</strong></div>{% endif %}
+    <div class="ficha-row"><span>Habitación tipo</span><strong>{{ obj.habitacion.get_tipo_display }}</strong></div>
+    {% if obj.dieta %}<div class="p-3"><div class="dg-lb">Dieta</div><div style="font-size:13px">{{ obj.dieta }}</div></div>{% endif %}
+    <div class="pac-acts no-print">
+      <a href="{% url 'hospitalizacion:evolucion' obj.pk %}" class="btn-vc w-full"><i class="bi bi-plus-lg"></i> Registrar evolución</a>
+      {% if obj.estado == 'internado' %}<a href="{% url 'hospitalizacion:alta' obj.pk %}" class="btn-dx w-full"><i class="bi bi-box-arrow-up-right"></i> Dar alta</a>{% endif %}
+      <a href="{% url 'hospitalizacion:editar' obj.pk %}" class="btn-ol w-full"><i class="bi bi-pencil"></i> Editar</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card">
+    <div class="form-sec">Motivo de ingreso</div>
+    <p style="font-size:13px">{{ obj.motivo_ingreso }}</p>
+    {% if obj.diagnostico_ingreso %}<div class="form-sec mt-3">Diagnóstico al ingreso</div><p style="font-size:13px">{{ obj.diagnostico_ingreso }}</p>{% endif %}
+  </div>
+  <div class="form-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="form-sec mb-0">Evoluciones diarias ({{ evoluciones|length }})</div>
+      <a href="{% url 'hospitalizacion:evolucion' obj.pk %}" class="btn-vc sm no-print"><i class="bi bi-plus-lg"></i> Nueva</a>
+    </div>
+    {% for ev in evoluciones %}
+    <div class="p-3 mb-3" style="border:1px solid #e8ecf0;border-radius:8px">
+      <div class="d-flex justify-content-between mb-2">
+        <div style="font-weight:700;font-size:13px">{{ ev.fecha|date:"d/m/Y H:i" }}</div>
+        <div style="font-size:12px;color:#64748b">Dr. {{ ev.veterinario.nombre_completo }}</div>
+      </div>
+      {% if ev.peso or ev.temperatura or ev.fc or ev.fr %}
+      <div class="row g-2 mb-2">
+        {% if ev.peso %}<div class="col-6 col-md-3"><span class="dg-lb">Peso</span><div class="dg-v">{{ ev.peso }}kg</div></div>{% endif %}
+        {% if ev.temperatura %}<div class="col-6 col-md-3"><span class="dg-lb">Temp.</span><div class="dg-v">{{ ev.temperatura }}°C</div></div>{% endif %}
+        {% if ev.fc %}<div class="col-6 col-md-3"><span class="dg-lb">FC</span><div class="dg-v">{{ ev.fc }}lpm</div></div>{% endif %}
+        {% if ev.fr %}<div class="col-6 col-md-3"><span class="dg-lb">FR</span><div class="dg-v">{{ ev.fr }}rpm</div></div>{% endif %}
+      </div>{% endif %}
+      <div style="font-size:13px">{{ ev.descripcion }}</div>
+      {% if ev.plan %}<div class="mt-2" style="font-size:12px;color:var(--vc)"><strong>Plan:</strong> {{ ev.plan }}</div>{% endif %}
+    </div>
+    {% empty %}<div class="text-center text-muted py-3">Sin evoluciones registradas</div>{% endfor %}
+  </div>
+</div>
+</div>
+{% endblock %}

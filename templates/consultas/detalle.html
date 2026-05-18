@@ -1,0 +1,92 @@
+{%  extends 'base/base.html' %}
+{% block title %}Consulta #{{ consulta.pk }}{% endblock %}
+{% block page_title %}Consulta #{{ consulta.pk }} – {{ consulta.paciente.nombre }}{% endblock %}
+{% block breadcrumb %}<nav class="vc-bc"><a href="{% url 'consultas:lista' %}">Consultas</a><i class="bi bi-chevron-right"></i><span>#{{ consulta.pk }}</span></nav>{% endblock %}
+{% block content %}
+<div class="row g-3">
+<div class="col-md-4">
+  <div class="panel p-0">
+    <div class="pac-hd">
+      <div class="pac-foto">{{ consulta.paciente.emoji }}</div>
+      <div><div class="pac-nm">{{ consulta.paciente.nombre }}</div><div class="pac-esp">{{ consulta.paciente.especie }}</div></div>
+    </div>
+    <div class="ficha-row"><span>Tipo consulta</span><strong><span class="bdg bt">{{ consulta.get_tipo_display }}</span></strong></div>
+    <div class="ficha-row"><span>Fecha</span><strong>{{ consulta.fecha|date:"d/m/Y H:i" }}</strong></div>
+    <div class="ficha-row"><span>Veterinario</span><strong>{{ consulta.veterinario.nombre_completo }}</strong></div>
+    {% if consulta.proxima_cita %}<div class="ficha-row"><span>Próxima cita</span><strong style="color:var(--vc)">{{ consulta.proxima_cita|date:"d/m/Y" }}</strong></div>{% endif %}
+    <div class="pac-acts no-print">
+      <a href="{% url 'consultas:editar' consulta.pk %}" class="btn-vc w-full"><i class="bi bi-pencil"></i> Editar</a>
+      <a href="{% url 'consultas:imprimir' consulta.pk %}" class="btn-ol w-full btn-print"><i class="bi bi-printer"></i> Imprimir</a>
+      <a href="{% url 'pacientes:detalle' consulta.paciente.pk %}" class="btn-ol w-full"><i class="bi bi-file-earmark-medical"></i> Historia</a>
+    </div>
+  </div>
+</div>
+<div class="col-md-8">
+  <div class="form-card">
+    <div class="form-sec">Examen físico</div>
+    <div class="row g-2">
+      {% if consulta.peso %}<div class="col-6 col-md-3"><div class="dg-item"><div class="dg-lb">Peso</div><div class="dg-v">{{ consulta.peso }} kg</div></div></div>{% endif %}
+      {% if consulta.temperatura %}<div class="col-6 col-md-3"><div class="dg-item"><div class="dg-lb">Temperatura</div><div class="dg-v">{{ consulta.temperatura }}°C</div></div></div>{% endif %}
+      {% if consulta.fc %}<div class="col-6 col-md-3"><div class="dg-item"><div class="dg-lb">FC</div><div class="dg-v">{{ consulta.fc }} lpm</div></div></div>{% endif %}
+      {% if consulta.fr %}<div class="col-6 col-md-3"><div class="dg-item"><div class="dg-lb">FR</div><div class="dg-v">{{ consulta.fr }} rpm</div></div></div>{% endif %}
+    </div>
+    {% if consulta.mucosas %}<div style="margin-top:10px"><span style="font-size:11px;color:#94a3b8;font-weight:700">MUCOSAS:</span> {{ consulta.mucosas }}</div>{% endif %}
+  </div>
+  <div class="form-card">
+    <div class="form-sec">SOAP – Registro clínico</div>
+    {% if consulta.subjetivo %}<div class="mb-3"><strong style="font-size:12px;color:var(--vc)">S – Subjetivo</strong><p class="mt-1" style="font-size:13px">{{ consulta.subjetivo }}</p></div>{% endif %}
+    {% if consulta.objetivo %}<div class="mb-3"><strong style="font-size:12px;color:var(--blue)">O – Objetivo</strong><p class="mt-1" style="font-size:13px">{{ consulta.objetivo }}</p></div>{% endif %}
+    {% if consulta.evaluacion %}<div class="mb-3"><strong style="font-size:12px;color:var(--amb)">A – Evaluación</strong><p class="mt-1" style="font-size:13px">{{ consulta.evaluacion }}</p></div>{% endif %}
+    {% if consulta.plan %}<div class="mb-3"><strong style="font-size:12px;color:var(--green)">P – Plan</strong><p class="mt-1" style="font-size:13px">{{ consulta.plan }}</p></div>{% endif %}
+    {% if consulta.diagnostico_definitivo %}
+    <div class="alert-box ab-w mt-3"><i class="bi bi-clipboard2-pulse-fill"></i><div><strong>Diagnóstico definitivo:</strong><br>{{ consulta.diagnostico_definitivo }}</div></div>
+    {% elif consulta.diagnostico_presuntivo %}
+    <div class="alert-box ab-w mt-3"><i class="bi bi-clipboard2-plus-fill"></i><div><strong>Diagnóstico presuntivo:</strong><br>{{ consulta.diagnostico_presuntivo }}</div></div>
+    {% endif %}
+  </div>
+  <div class="form-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="form-sec mb-0">Prescripciones</div>
+      <button class="btn-ol sm no-print" onclick="document.getElementById('rx-form').classList.toggle('d-none')"><i class="bi bi-plus"></i> Agregar</button>
+    </div>
+    <div id="rx-form" class="d-none mb-3">
+      {% load widget_tweaks %}
+      <form method="post" action="{% url 'consultas:prescripcion' consulta.pk %}">{% csrf_token %}
+      <div class="row g-2">
+        {% for field in form_rx %}
+        <div class="col-md-4"><label class="form-label" style="font-size:11px">{{ field.label }}</label>{% render_field field %}</div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn-vc sm mt-2"><i class="bi bi-check"></i> Agregar</button>
+      </form>
+    </div>
+    {% for rx in consulta.prescripciones.all %}
+    <div class="d-flex align-items-start gap-3 p-3 mb-2" style="background:#f8fafc;border-radius:8px;border:1px solid #e8ecf0">
+      <i class="bi bi-capsule" style="color:var(--vc);font-size:20px;margin-top:2px"></i>
+      <div><div style="font-weight:700;font-size:13px">{{ rx.medicamento_nombre }} – {{ rx.dosis }}</div>
+      <div style="font-size:12px;color:#64748b">{{ rx.frecuencia }} · {{ rx.duracion }} · Vía: {{ rx.via }}</div>
+      {% if rx.indicaciones %}<div style="font-size:12px;color:#94a3b8;margin-top:4px">{{ rx.indicaciones }}</div>{% endif %}</div>
+    </div>
+    {% empty %}<div class="text-center text-muted py-2" style="font-size:13px">Sin prescripciones</div>{% endfor %}
+  </div>
+  <div class="form-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="form-sec mb-0">Notas clínicas</div>
+      <button class="btn-ol sm no-print" onclick="document.getElementById('nota-form').classList.toggle('d-none')"><i class="bi bi-plus"></i> Agregar nota</button>
+    </div>
+    <div id="nota-form" class="d-none mb-3">
+      <form method="post" action="{% url 'consultas:nota' consulta.pk %}">{% csrf_token %}
+        {% render_field form_nota %}
+        <button type="submit" class="btn-vc sm mt-2"><i class="bi bi-check"></i> Guardar nota</button>
+      </form>
+    </div>
+    {% for nota in consulta.notas.all %}
+    <div class="p-3 mb-2" style="background:#f8fafc;border-radius:8px;border-left:3px solid var(--vc)">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">{{ nota.veterinario.nombre_completo }} · {{ nota.fecha|date:"d/m/Y H:i" }}</div>
+      <div style="font-size:13px">{{ nota.nota }}</div>
+    </div>
+    {% empty %}<div class="text-center text-muted py-2" style="font-size:13px">Sin notas</div>{% endfor %}
+  </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+{% block title %}Exámenes de laboratorio{% endblock %}
+{% block page_title %}Exámenes de laboratorio{% endblock %}
+{% block content %}
+<div class="d-flex gap-2 mb-3 no-print"><a href="{% url 'examenes:crear' %}" class="btn-vc"><i class="bi bi-plus-lg"></i> Nuevo</a></div>
+<div class="tbl"><table class="vc-tbl">
+<thead><tr><th>Paciente</th><th>Examen</th><th>Fecha</th><th>Estado</th><th></th></tr></thead>
+<tbody>{% for e in items %}
+<tr><td><a href="{% url 'pacientes:detalle' e.paciente.pk %}" style="color:var(--vc);font-weight:700">{{ e.paciente.nombre }}</a></td>
+<td style="font-weight:700">{{ e.tipo }}</td><td>{{ e.fecha_solicitud|date:"d/m/Y" }}</td>
+<td><span class="bdg {% if e.estado == 'completado' %}bg{% elif e.estado == 'cancelado' %}br{% else %}ba{% endif %}">{{ e.get_estado_display }}</span></td>
+<td class="d-flex gap-1 no-print"><a href="{% url 'examenes:detalle' e.pk %}" class="btn-ol sm">Ver</a><a href="{% url 'examenes:editar' e.pk %}" class="btn-ol sm"><i class="bi bi-pencil"></i></a></td>
+</tr>
+{% empty %}<tr><td colspan="20" class="text-center text-muted py-4">Sin registros</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% if items.has_other_pages %}
+<div class="d-flex justify-content-center gap-2 mt-3 no-print">
+  {% if items.has_previous %}<a href="?page={{ items.previous_page_number }}" class="btn-ol sm">Anterior</a>{% endif %}
+  <span class="bdg bgr" style="padding:6px 12px">Pág {{ items.number }}/{{ items.paginator.num_pages }}</span>
+  {% if items.has_next %}<a href="?page={{ items.next_page_number }}" class="btn-ol sm">Siguiente</a>{% endif %}
+</div>{% endif %}
+{% endblock %}
