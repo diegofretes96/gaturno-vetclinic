@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ config.nombre_clinica }} — Clínica Veterinaria & Petshop</title>
+<meta name="description" content="{{ config.slogan }}">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root{--vc:#1D9E75;--vc-dk:#0F6E56;--vc-lt:#E1F5EE;--amb:#EF9F27;--amb-lt:#FEF3DC;--dark:#1a2332;--gray:#6c757d}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;color:#2d3436;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── Navbar ── */
+.lp-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:12px 0;transition:all .3s;background:transparent}
+.lp-nav.scrolled{background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.08)}
+.lp-nav .brand{font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px}
+.lp-nav.scrolled .brand{color:var(--dark)}
+.lp-nav .brand em{color:var(--amb);font-style:normal}
+.lp-nav .nav-link-lp{color:rgba(255,255,255,.85);font-weight:600;font-size:14px;padding:6px 14px;border-radius:8px;transition:all .2s}
+.lp-nav.scrolled .nav-link-lp{color:#555}
+.lp-nav .nav-link-lp:hover,.lp-nav .nav-link-lp:focus{color:#fff;background:rgba(255,255,255,.15)}
+.lp-nav.scrolled .nav-link-lp:hover{color:var(--vc);background:var(--vc-lt)}
+.btn-nav{background:var(--amb);color:#fff!important;border-radius:10px;padding:8px 18px!important;font-weight:700!important;transition:all .2s}
+.btn-nav:hover{background:#d4891f;transform:translateY(-1px)}
+
+/* ── Hero ── */
+.hero{min-height:100vh;background:linear-gradient(135deg,var(--vc-dk) 0%,var(--vc) 50%,#26b888 100%);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:80px}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='10'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:6px 16px;font-size:13px;color:#fff;margin-bottom:24px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;color:#fff;line-height:1.15;margin-bottom:20px}
+.hero h1 span{color:var(--amb)}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,.85);margin-bottom:36px;max-width:500px}
+.btn-hero-main{background:#fff;color:var(--vc-dk);border-radius:12px;padding:14px 28px;font-weight:800;font-size:15px;display:inline-flex;align-items:center;gap:8px;transition:all .25s;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.btn-hero-main:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.2);color:var(--vc-dk)}
+.btn-hero-sec{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:12px;padding:12px 24px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:8px;transition:all .25s;backdrop-filter:blur(10px)}
+.btn-hero-sec:hover{background:rgba(255,255,255,.25);color:#fff;transform:translateY(-2px)}
+.hero-stats{display:flex;gap:32px;margin-top:48px}
+.stat-item{text-align:center}
+.stat-num{font-size:2rem;font-weight:900;color:#fff}
+.stat-lbl{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.hero-img-wrap{position:relative}
+.hero-card{background:rgba(255,255,255,.12);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:28px;color:#fff}
+.hero-card-icon{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px}
+
+/* ── Sections ── */
+.section{padding:90px 0}
+.section-alt{background:#f8fafb}
+.section-tag{display:inline-block;background:var(--vc-lt);color:var(--vc);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 14px;border-radius:50px;margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:900;color:var(--dark);margin-bottom:12px;line-height:1.2}
+.section-sub{color:var(--gray);font-size:1.05rem;max-width:540px}
+
+/* ── Galería ── */
+.gallery-grid{columns:3;gap:16px}
+.gallery-grid img{width:100%;margin-bottom:16px;border-radius:14px;object-fit:cover;transition:transform .3s,box-shadow .3s;cursor:pointer}
+.gallery-grid img:hover{transform:scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,.15)}
+@media(max-width:768px){.gallery-grid{columns:2}}
+@media(max-width:480px){.gallery-grid{columns:1}}
+.gallery-empty{text-align:center;padding:60px 20px;color:#aaa}
+.gallery-empty i{font-size:48px;margin-bottom:12px;display:block;color:#ddd}
+
+/* ── Productos ── */
+.prod-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.06);transition:all .3s;height:100%}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.12)}
+.prod-img{width:100%;height:200px;object-fit:cover;background:#f0f0f0}
+.prod-img-placeholder{width:100%;height:200px;background:linear-gradient(135deg,var(--vc-lt),#d1f2e6);display:flex;align-items:center;justify-content:center;font-size:48px}
+.prod-body{padding:18px}
+.prod-name{font-size:16px;font-weight:800;color:var(--dark);margin-bottom:6px}
+.prod-desc{font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.5;min-height:40px}
+.prod-price{font-size:20px;font-weight:900;color:var(--vc)}
+.prod-price span{font-size:12px;font-weight:600;color:var(--gray)}
+.btn-wa-prod{display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:#fff;border-radius:10px;padding:10px;font-weight:700;font-size:13px;transition:all .2s;margin-top:12px}
+.btn-wa-prod:hover{background:#128C7E;color:#fff;transform:translateY(-1px)}
+
+/* ── Info / Ubicación ── */
+.info-card{background:#fff;border-radius:18px;padding:32px;box-shadow:0 2px 16px rgba(0,0,0,.06);height:100%}
+.info-icon{width:48px;height:48px;border-radius:14px;background:var(--vc-lt);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--vc);margin-bottom:14px}
+.info-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);font-weight:700;margin-bottom:4px}
+.info-val{font-size:15px;font-weight:700;color:var(--dark)}
+.map-frame{width:100%;height:320px;border-radius:18px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.08)}
+.map-frame iframe{width:100%;height:100%;border:0}
+
+/* ── Contacto ── */
+.contact-box{background:#fff;border-radius:20px;box-shadow:0 4px 30px rgba(0,0,0,.08);padding:40px;height:100%}
+.contact-channel{display:flex;align-items:center;gap:14px;padding:18px;border-radius:14px;background:#f8fafb;margin-bottom:14px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.contact-channel:hover,.contact-channel.active{border-color:var(--vc);background:var(--vc-lt)}
+.contact-channel input[type=radio]{display:none}
+.ch-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ch-wa{background:#d4f5e0;color:#128C7E}
+.ch-em{background:#dde8ff;color:#4a6cf7}
+.ch-title{font-weight:700;font-size:14px;color:var(--dark)}
+.ch-sub{font-size:12px;color:var(--gray)}
+.form-control-lp{border:2px solid #e8ecef;border-radius:10px;padding:12px 16px;font-family:'Nunito',sans-serif;font-size:14px;transition:border-color .2s}
+.form-control-lp:focus{outline:none;border-color:var(--vc);box-shadow:0 0 0 3px rgba(29,158,117,.1)}
+.btn-send{background:var(--vc);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-weight:800;font-size:15px;cursor:pointer;width:100%;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-send:hover{background:var(--vc-dk);transform:translateY(-1px)}
+
+/* ── Alertas Django messages ── */
+.lp-alert{padding:12px 20px;border-radius:12px;margin-bottom:16px;font-weight:600;display:flex;align-items:center;gap:10px}
+.lp-alert-success{background:#d4edda;color:#155724}
+.lp-alert-error{background:#f8d7da;color:#721c24}
+
+/* ── Footer ── */
+.lp-footer{background:var(--dark);color:rgba(255,255,255,.7);padding:50px 0 28px}
+.footer-brand{font-size:24px;font-weight:900;color:#fff}
+.footer-brand em{color:var(--amb);font-style:normal}
+.footer-link{color:rgba(255,255,255,.6);font-size:14px;display:block;margin-bottom:6px;transition:color .2s}
+.footer-link:hover{color:var(--amb)}
+.footer-divider{border-color:rgba(255,255,255,.1);margin:30px 0 20px}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.4);text-align:center}
+.social-btn{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:18px;transition:all .2s;margin-right:8px}
+.social-btn:hover{background:var(--vc);color:#fff;transform:translateY(-2px)}
+
+/* ── WhatsApp FAB ── */
+.wa-fab{position:fixed;bottom:28px;right:28px;z-index:999;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.4);color:#fff;font-size:28px;transition:all .3s;animation:pulse-wa 2s infinite}
+.wa-fab:hover{background:#128C7E;transform:scale(1.1);color:#fff}
+@keyframes pulse-wa{0%,100%{box-shadow:0 4px 20px rgba(37,211,102,.4)}50%{box-shadow:0 4px 30px rgba(37,211,102,.7)}}
+</style>
+</head>
+<body>
+
+{% if messages %}
+<div style="position:fixed;top:80px;right:20px;z-index:2000;max-width:360px">
+{% for m in messages %}
+<div class="lp-alert {% if 'error' in m.tags %}lp-alert-error{% else %}lp-alert-success{% endif %}">
+  <i class="bi bi-{% if 'error' in m.tags %}x-circle-fill{% else %}check-circle-fill{% endif %}"></i>
+  {{ m }}
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<!-- ── NAVBAR ─────────────────────────────────────────────────────── -->
+<nav class="lp-nav" id="navbar">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a href="#inicio" class="brand">Ga<em>turno</em></a>
+    <div class="d-none d-md-flex gap-1 align-items-center">
+      <a href="#galeria" class="nav-link-lp">Galería</a>
+      <a href="#petshop" class="nav-link-lp">Petshop</a>
+      <a href="#nosotros" class="nav-link-lp">Nosotros</a>
+      <a href="#contacto" class="nav-link-lp">Contacto</a>
+      <a href="/gestion-clinica/accounts/login/" class="nav-link-lp btn-nav ms-2">
+        <i class="bi bi-box-arrow-in-right"></i> Acceder
+      </a>
+    </div>
+    <button class="d-md-none btn btn-sm" style="background:rgba(255,255,255,.15);border:none;color:#fff" id="mobileMenuBtn">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div class="container d-md-none" id="mobileMenu" style="display:none!important">
+    <div style="background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border-radius:14px;padding:12px;margin-top:10px">
+      <a href="#galeria" class="nav-link-lp d-block mb-1">Galería</a>
+      <a href="#petshop" class="nav-link-lp d-block mb-1">Petshop</a>
+      <a href="#nosotros" class="nav-link-lp d-block mb-1">Nosotros</a>
+      <a href="#contacto" class="nav-link-lp d-block mb-1">Contacto</a>
+      <a href="/gestion-clinica/accounts/login/" class="btn-nav nav-link-lp d-block mt-2">Acceder al sistema</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────── -->
+<section class="hero" id="inicio">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="hero-badge">
+          <i class="bi bi-heart-pulse-fill"></i> Clínica Veterinaria & Petshop
+        </div>
+        <h1>{{ config.nombre_clinica }}<br><span>{{ config.texto_hero }}</span></h1>
+        <p>{{ config.slogan }}</p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="#contacto" class="btn-hero-main">
+            <i class="bi bi-calendar-check"></i> Sacar turno
+          </a>
+          {% if config.whatsapp %}
+          <a href="https://wa.me/{{ config.whatsapp }}" target="_blank" class="btn-hero-sec">
+            <i class="bi bi-whatsapp"></i> WhatsApp
+          </a>
+          {% endif %}
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num">🐾</div>
+            <div class="stat-lbl">Mascota Feliz</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">❤️</div>
+            <div class="stat-lbl">Con amor</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">⭐</div>
+            <div class="stat-lbl">Calidad</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="hero-card mb-3">
+              <div class="hero-card-icon"><i class="bi bi-stethoscope"></i></div>
+              <div style="font-weight:800;font-size:15px;margin-bottom:4px">Consultas médicas</div>
+              <div style="font-size:12px;opacity:.75">Diagnóstico y tratamiento profesional</div>
+            </div>
+            <div class="hero-card">
+              <div class="hero-card-icon"><i class="bi bi-scissors"></i></div>
+              <div style="font-weight:800;font-size:15px;margin-bottom:4px">Estética y grooming</div>
+              <div style="font-size:12px;opacity:.75">Tu mascota siempre hermosa</div>
+            </div>
+          </div>
+          <div class="col-6" style="margin-top:32px">
+            <div class="hero-card mb-3">
+              <div class="hero-card-icon"><i class="bi bi-shield-plus"></i></div>
+              <div style="font-weight:800;font-size:15px;margin-bottom:4px">Vacunación</div>
+              <div style="font-size:12px;opacity:.75">Mantené su salud al día</div>
+            </div>
+            <div class="hero-card">
+              <div class="hero-card-icon"><i class="bi bi-bag-heart"></i></div>
+              <div style="font-weight:800;font-size:15px;margin-bottom:4px">Petshop</div>
+              <div style="font-size:12px;opacity:.75">Productos seleccionados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GALERÍA ────────────────────────────────────────────────────── -->
+<section class="section" id="galeria">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-tag">Galería</span>
+      <h2 class="section-title">Nuestros pacientes</h2>
+      <p class="section-sub mx-auto">Momentos especiales de las mascotas que pasan por Gaturno</p>
+    </div>
+    {% if fotos %}
+    <div class="gallery-grid">
+      {% for foto in fotos %}
+      <img src="{{ foto.foto.url }}" alt="{{ foto.titulo|default:'Mascota' }}" loading="lazy"
+           title="{{ foto.titulo }}{% if foto.descripcion %} — {{ foto.descripcion }}{% endif %}">
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="gallery-empty">
+      <i class="bi bi-images"></i>
+      <p>Las fotos de nuestros pacientes se cargan desde el panel de administración.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── PETSHOP ────────────────────────────────────────────────────── -->
+<section class="section section-alt" id="petshop">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-tag" style="background:var(--amb-lt);color:var(--amb)">Petshop</span>
+      <h2 class="section-title">Productos para tu mascota</h2>
+      <p class="section-sub mx-auto">Alimentos, accesorios y todo lo que necesitás en un solo lugar</p>
+    </div>
+    {% if productos %}
+    <div class="row g-4">
+      {% for p in productos %}
+      <div class="col-sm-6 col-lg-4 col-xl-3">
+        <div class="prod-card">
+          {% if p.foto %}
+          <img src="{{ p.foto.url }}" alt="{{ p.nombre }}" class="prod-img">
+          {% else %}
+          <div class="prod-img-placeholder">🐾</div>
+          {% endif %}
+          <div class="prod-body">
+            <div class="prod-name">{{ p.nombre }}</div>
+            {% if p.descripcion %}
+            <div class="prod-desc">{{ p.descripcion }}</div>
+            {% else %}
+            <div class="prod-desc"></div>
+            {% endif %}
+            <div class="prod-price">Gs. {{ p.precio|floatformat:0 }}</div>
+            {% if config.whatsapp %}
+            <a href="https://wa.me/{{ config.whatsapp }}?text={{ 'Hola! Me interesa el producto: '|urlencode }}{{ p.nombre|urlencode }}"
+               target="_blank" class="btn-wa-prod">
+              <i class="bi bi-whatsapp"></i> Consultar por WhatsApp
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="gallery-empty">
+      <i class="bi bi-bag-x"></i>
+      <p>Los productos se cargan desde el panel de administración → Productos del Petshop.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── NOSOTROS / UBICACIÓN ───────────────────────────────────────── -->
+<section class="section" id="nosotros">
+  <div class="container">
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-5">
+        <span class="section-tag">Nosotros</span>
+        <h2 class="section-title">¿Dónde estamos?</h2>
+        <p class="text-muted mb-4">Encontranos y visitanos. Tu mascota merece la mejor atención.</p>
+        <div class="row g-3">
+          {% if config.direccion %}
+          <div class="col-12">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-geo-alt-fill"></i></div>
+              <div class="info-label">Dirección</div>
+              <div class="info-val">{{ config.direccion }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if config.horario %}
+          <div class="col-sm-6">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-clock-fill"></i></div>
+              <div class="info-label">Horario</div>
+              <div class="info-val" style="font-size:13px">{{ config.horario }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if config.telefono %}
+          <div class="col-sm-6">
+            <div class="info-card">
+              <div class="info-icon"><i class="bi bi-telephone-fill"></i></div>
+              <div class="info-label">Teléfono</div>
+              <div class="info-val">{{ config.telefono }}</div>
+            </div>
+          </div>
+          {% endif %}
+          {% if config.whatsapp %}
+          <div class="col-12">
+            <a href="https://wa.me/{{ config.whatsapp }}" target="_blank"
+               style="display:flex;align-items:center;gap:12px;background:#d4f5e0;border-radius:14px;padding:16px 20px;color:#128C7E;font-weight:700;transition:all .2s">
+              <i class="bi bi-whatsapp fs-4"></i>
+              <div>
+                <div style="font-size:13px;opacity:.8;font-weight:600">WhatsApp</div>
+                <div>+{{ config.whatsapp }}</div>
+              </div>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-7">
+        {% if config.google_maps_embed %}
+        <div class="map-frame">
+          <iframe src="{{ config.google_maps_embed }}" allowfullscreen loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        {% else %}
+        <div style="background:#f0f0f0;border-radius:18px;height:320px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#aaa">
+          <i class="bi bi-map" style="font-size:48px"></i>
+          <p>Configurá el mapa desde el panel de administración</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACTO ───────────────────────────────────────────────────── -->
+<section class="section section-alt" id="contacto">
+  <div class="container">
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-5">
+        <span class="section-tag">Contacto</span>
+        <h2 class="section-title">¿Tenés alguna consulta?</h2>
+        <p class="text-muted mb-4">Elegí cómo querés comunicarte con nosotros. Respondemos a la brevedad.</p>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          {% if config.whatsapp %}
+          <a href="https://wa.me/{{ config.whatsapp }}" target="_blank"
+             style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:all .2s">
+            <div style="width:46px;height:46px;border-radius:12px;background:#d4f5e0;display:flex;align-items:center;justify-content:center;font-size:22px;color:#128C7E;flex-shrink:0">
+              <i class="bi bi-whatsapp"></i>
+            </div>
+            <div>
+              <div style="font-weight:700;color:#2d3436">Escribinos por WhatsApp</div>
+              <div style="font-size:13px;color:#888">Respuesta inmediata</div>
+            </div>
+            <i class="bi bi-arrow-right ms-auto" style="color:#ccc"></i>
+          </a>
+          {% endif %}
+          {% if config.email_contacto %}
+          <a href="mailto:{{ config.email_contacto }}"
+             style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:all .2s">
+            <div style="width:46px;height:46px;border-radius:12px;background:#dde8ff;display:flex;align-items:center;justify-content:center;font-size:22px;color:#4a6cf7;flex-shrink:0">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div>
+              <div style="font-weight:700;color:#2d3436">Envianos un email</div>
+              <div style="font-size:13px;color:#888">{{ config.email_contacto }}</div>
+            </div>
+            <i class="bi bi-arrow-right ms-auto" style="color:#ccc"></i>
+          </a>
+          {% endif %}
+          {% if config.instagram %}
+          <a href="{{ config.instagram }}" target="_blank"
+             style="display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:all .2s">
+            <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;flex-shrink:0">
+              <i class="bi bi-instagram"></i>
+            </div>
+            <div>
+              <div style="font-weight:700;color:#2d3436">Seguinos en Instagram</div>
+              <div style="font-size:13px;color:#888">Fotos y novedades</div>
+            </div>
+            <i class="bi bi-arrow-right ms-auto" style="color:#ccc"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="contact-box">
+          <h5 style="font-weight:800;margin-bottom:20px">Envianos un mensaje</h5>
+          <form action="{% url 'landing:contacto' %}" method="post" id="contactForm">
+            {% csrf_token %}
+            <!-- Canal -->
+            <div class="mb-4">
+              <label class="contact-channel {% if config.whatsapp %}active{% endif %}" onclick="setCanal('whatsapp',this)">
+                <input type="radio" name="canal" value="whatsapp" {% if config.whatsapp %}checked{% endif %}>
+                <div class="ch-icon ch-wa"><i class="bi bi-whatsapp"></i></div>
+                <div>
+                  <div class="ch-title">Responder por WhatsApp</div>
+                  <div class="ch-sub">Te abrimos el chat directo</div>
+                </div>
+              </label>
+              <label class="contact-channel {% if not config.whatsapp %}active{% endif %}" onclick="setCanal('email',this)">
+                <input type="radio" name="canal" value="email" {% if not config.whatsapp %}checked{% endif %}>
+                <div class="ch-icon ch-em"><i class="bi bi-envelope-fill"></i></div>
+                <div>
+                  <div class="ch-title">Responder por Email</div>
+                  <div class="ch-sub">Te contactamos a tu correo</div>
+                </div>
+              </label>
+            </div>
+            <!-- Campos -->
+            <div class="row g-3 mb-3">
+              <div class="col-sm-6">
+                <label style="font-size:13px;font-weight:700;margin-bottom:6px;display:block">Nombre *</label>
+                <input type="text" name="nombre" class="form-control-lp w-100" required placeholder="Tu nombre">
+              </div>
+              <div class="col-sm-6">
+                <label style="font-size:13px;font-weight:700;margin-bottom:6px;display:block">Teléfono</label>
+                <input type="text" name="telefono" class="form-control-lp w-100" placeholder="Opcional">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label style="font-size:13px;font-weight:700;margin-bottom:6px;display:block">Email</label>
+              <input type="email" name="email" class="form-control-lp w-100" placeholder="tu@email.com (opcional)">
+            </div>
+            <div class="mb-4">
+              <label style="font-size:13px;font-weight:700;margin-bottom:6px;display:block">Mensaje *</label>
+              <textarea name="mensaje" class="form-control-lp w-100" rows="4" required
+                        placeholder="¿En qué podemos ayudarte?"></textarea>
+            </div>
+            <button type="submit" class="btn-send">
+              <i class="bi bi-send-fill"></i> Enviar mensaje
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+<footer class="lp-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="footer-brand mb-3">Ga<em>turno</em></div>
+        <p style="font-size:14px;line-height:1.7;max-width:320px">{{ config.slogan }}</p>
+        <div class="mt-3">
+          {% if config.instagram %}<a href="{{ config.instagram }}" target="_blank" class="social-btn"><i class="bi bi-instagram"></i></a>{% endif %}
+          {% if config.facebook %}<a href="{{ config.facebook }}" target="_blank" class="social-btn"><i class="bi bi-facebook"></i></a>{% endif %}
+          {% if config.whatsapp %}<a href="https://wa.me/{{ config.whatsapp }}" target="_blank" class="social-btn"><i class="bi bi-whatsapp"></i></a>{% endif %}
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:16px">Servicios</div>
+        <a class="footer-link" href="#galeria">Galería de pacientes</a>
+        <a class="footer-link" href="#petshop">Petshop</a>
+        <a class="footer-link" href="#nosotros">Ubicación</a>
+        <a class="footer-link" href="#contacto">Contacto</a>
+      </div>
+      <div class="col-md-4">
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:16px">Información</div>
+        {% if config.direccion %}<a class="footer-link" href="#nosotros"><i class="bi bi-geo-alt me-1"></i>{{ config.direccion }}</a>{% endif %}
+        {% if config.telefono %}<a class="footer-link" href="tel:{{ config.telefono }}"><i class="bi bi-telephone me-1"></i>{{ config.telefono }}</a>{% endif %}
+        {% if config.email_contacto %}<a class="footer-link" href="mailto:{{ config.email_contacto }}"><i class="bi bi-envelope me-1"></i>{{ config.email_contacto }}</a>{% endif %}
+        {% if config.horario %}<div class="footer-link"><i class="bi bi-clock me-1"></i>{{ config.horario }}</div>{% endif %}
+      </div>
+    </div>
+    <hr class="footer-divider">
+    <div class="footer-copy">
+      © {% now "Y" %} {{ config.nombre_clinica }} — Todos los derechos reservados &nbsp;·&nbsp;
+      <a href="/gestion-clinica/accounts/login/" style="color:rgba(255,255,255,.3)">Sistema de gestión</a>
+    </div>
+  </div>
+</footer>
+
+{% if config.whatsapp %}
+<a href="https://wa.me/{{ config.whatsapp }}" target="_blank" class="wa-fab" title="Escribinos por WhatsApp">
+  <i class="bi bi-whatsapp"></i>
+</a>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Navbar scroll effect
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Mobile menu
+document.getElementById('mobileMenuBtn').addEventListener('click', function(){
+  const m = document.getElementById('mobileMenu');
+  m.style.display = m.style.display === 'none' || m.style.display === '' ? 'block' : 'none';
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+
+// Contact channel selector
+function setCanal(val, el){
+  document.querySelectorAll('.contact-channel').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  el.querySelector('input').checked = true;
+}
+
+// Auto-dismiss alerts
+setTimeout(() => {
+  document.querySelectorAll('.lp-alert').forEach(a => {
+    a.style.transition='opacity .5s'; a.style.opacity='0';
+    setTimeout(() => a.remove(), 500);
+  });
+}, 4000);
+</script>
+</body>
+</html>

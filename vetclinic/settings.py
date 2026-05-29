@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'apps.certificados',
     'apps.vademecum',
     'apps.reportes',
+    'apps.landing',
 ]
 
 MIDDLEWARE = [
@@ -101,9 +102,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = '/gestion-clinica/accounts/login/'
+LOGIN_REDIRECT_URL = '/gestion-clinica/'
+LOGOUT_REDIRECT_URL = '/gestion-clinica/accounts/login/'
+
+# Email para el formulario de contacto del sitio público
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@gaturno.com')
 
 CLINICA_NOMBRE = config('CLINICA_NOMBRE', default='Gaturno')
 CLINICA_DIRECCION = config('CLINICA_DIRECCION', default='')

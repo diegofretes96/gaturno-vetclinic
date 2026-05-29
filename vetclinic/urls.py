@@ -3,8 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
+# Todas las URLs del sistema de gestión bajo /gestion-clinica/
+gestion_patterns = [
     path('', include('apps.reportes.urls', namespace='reportes')),
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
     path('propietarios/', include('apps.propietarios.urls', namespace='propietarios')),
@@ -22,4 +22,15 @@ urlpatterns = [
     path('estetica/', include('apps.estetica.urls', namespace='estetica')),
     path('certificados/', include('apps.certificados.urls', namespace='certificados')),
     path('vademecum/', include('apps.vademecum.urls', namespace='vademecum')),
+]
+
+urlpatterns = [
+    # Panel de administración Django
+    path('admin/', admin.site.urls),
+
+    # Sitio web público (landing)
+    path('', include('apps.landing.urls', namespace='landing')),
+
+    # Sistema de gestión veterinaria
+    path('gestion-clinica/', include(gestion_patterns)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
